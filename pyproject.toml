@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "struct_strm"
+version = "0.0.1"
+description = "Structured Streaming Lib For UI Components"
+readme = "readme.md"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "pytest",
+    "pytest-cov[all]"
+]
+
+docs = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocs-techdocs-core"
+]

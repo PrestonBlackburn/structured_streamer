@@ -1,0 +1,8 @@
+# example include
+include LICENSE
+
+# exmaple template include
+recursive-include src/struct_strm/templates *.yaml
+
+# example exclude
+recursive-exclude .devcontainer *
