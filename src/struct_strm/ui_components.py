@@ -1,8 +1,13 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Generator, List
-from struct_strm.default_structs import ListStruct
+from struct_strm.default_structs import (
+    DefaultListStruct, 
+    DefaultListItem, 
+    get_struct_keys
+)
 from struct_strm.env import template 
+from struct_strm.partial_parser import parse_list_json
 
 
 @dataclass
@@ -13,7 +18,6 @@ class AbstractComponent(ABC):
     2. partial rendering with the llm stream
     3. the complete render which may enrich the component
     """
-    ...
 
     @abstractmethod
     async def placeholder_render(
@@ -44,7 +48,6 @@ class ListComponent(AbstractComponent):
     # mostly just a simple example for testing
     items: List[str] = field(default_factory=list)
     # default_struct: ListStruct = field(default_factory=ListStruct)
-   
 
     async def placeholder_render(
             self, 
@@ -54,54 +57,23 @@ class ListComponent(AbstractComponent):
         component = placeholder_template.render()
         yield component
 
-
     async def partial_render(
             self, 
             response_stream: Generator[str, None, None], 
+            ListType = DefaultListStruct,
+            ItemType = DefaultListItem,
             **kwargs) -> Generator[str, None, None]:
         # parse the string stream into objects that make sense
         partial_template = template("list/list_partial.html")
         # example format (as json string):
         # """{"items": [{"item": "apple orange"}, {"item": "banana kiwi grape"}, {"item": "mango pineapple"}]}"""
-        start_key = "items"
-        item_key = "item"
-        aggregated_items = ""
-        streamed_items = []
         # basically just pull out "item" from the items list as they come
-        for item in response_stream:
-            aggregated_items += item
-            # later we can handle quotes
-            aggregated_items = aggregated_items.replace('"', '')
-            aggregated_items = aggregated_items.replace("'", "")
-            if start_key in aggregated_items:
-                # then we have a full item
-                if item_key in aggregated_items:
-                    item_values = aggregated_items.split(f'{item_key}:')[1:]
-                    # can revisit this logic later
-                    for idx, value in enumerate(item_values):
-                        if len(streamed_items) <= idx:
-                            if value.endswith("},{"):
-                                value = value[:-4]
-                            if value.endswith("}]") or value.endswith("},"):
-                                value = value[:-4]
-                            if value.endswith("}"):
-                                value = value[:-3]
-                            streamed_items.append(value)
-                         
-                        # cleanup terminators
-                        if value.endswith("},{"):
-                            streamed_items[idx] = value[:-3]
-                        if value.endswith("},") or value.endswith(",{"):
-                            streamed_items[idx] = value[:-3] 
-                        if value.endswith("}]"):
-                            streamed_items[idx] = value[:-4]
-                        if value.endswith("}"):
-                            streamed_items[idx] = value[:-3]
-
+        start_key = get_struct_keys(ListType)[0] # should only have one key
+        item_key = get_struct_keys(ItemType)[0] # should only have one item key
+        items_list: Generator = parse_list_json(response_stream, start_key=start_key, item_key=item_key)
+        async for streamed_items in items_list:
             self.items = streamed_items
             yield partial_template.render(item=[streamed_items])
-        pass
-
 
     async def complete_render(
             self, 
