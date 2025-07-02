@@ -1,11 +1,11 @@
-from typing import Generator, List, Dict
+from typing import AsyncGenerator, List, Dict
 
 async def parse_list_json(
-    response_stream: Generator[str, None, None],
+    response_stream: AsyncGenerator[str, None],
     start_key: str = "items",
     item_key: str = "item",
 
-) -> Generator[List[str], None, None]:
+) -> AsyncGenerator[List[str], None]:
 
     buffer = ""
     inside_items = False
@@ -15,7 +15,7 @@ async def parse_list_json(
     item_idx = -1
     item_values: Dict[int, str] = {}
 
-    for chunk in response_stream:
+    async for chunk in response_stream:
         chunk = chunk.strip()
 
         if not chunk:

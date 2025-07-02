@@ -1,5 +1,5 @@
 <!-- Final rendered HTML for the list component -->
-<div id="list-card" class="relative max-w-sm mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl m-4 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.8)_50%,transparent_75%,transparent_100%)] bg-[length:250%_250%,100%_100%] bg-no-repeat">
+<div id="list-card" class="relative max-w-sm mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl m-4 bg-[linear-gradient(45deg,transparent_25%,rgba(246,230,59,.6)_50%,transparent_75%,transparent_100%)] bg-[length:250%_250%,100%_100%] bg-no-repeat">
     <div class="p-8">
         {#
           Template for a complete list of items.
@@ -25,13 +25,13 @@
 </style>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const card = document.getElementById('list-card');
+function card_shine(elementId) {
+    const card = document.getElementById(elementId);
     if (card) {
         // Use a timeout to ensure the initial state is rendered before applying the animation class
         setTimeout(function() {
             card.classList.add('shine-effect');
-        }, 100);
+        }, 250);
 
         // Optional: remove the class after animation to clean up
         card.addEventListener('transitionend', () => {
@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", function() {
             card.style.transition = 'none';
         }, { once: true });
     }
-});
+};
+card_shine('list-card');
 </script>
 

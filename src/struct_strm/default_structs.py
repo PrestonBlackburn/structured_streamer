@@ -1,4 +1,6 @@
-from typing import List, Generator, Dict, Union
+import asyncio
+import time
+from typing import List, Generator, Dict, Union, AsyncGenerator
 from pydantic import BaseModel
 
 def get_struct_keys(struct: BaseModel) -> List[str]:
@@ -12,10 +14,10 @@ class DefaultListStruct(BaseModel):
     items: List[DefaultListItem]
     # ex: itesms=[{"item": "apple orange"}, {"item2": "banana kiwi grape"}, {"item3": "mango pineapple"}]
 
-def simulate_stream_list_struct() -> Generator[str, None, None]:       
+async def simulate_stream_list_struct(interval_sec:float = 0.0) -> AsyncGenerator[str, None]:       
     # Simulate a stream from a structured generator like OpenAI
     list_struct = DefaultListStruct(items=[
-        DefaultListItem(item="apple &orange"), 
+        DefaultListItem(item="apple &orange &strawberry &berry"), 
         DefaultListItem(item="banana &kiwi &grape"), 
         DefaultListItem(item="mango &pineapple")
     ])
@@ -25,5 +27,6 @@ def simulate_stream_list_struct() -> Generator[str, None, None]:
     stream_response = json_response.split(" ")
     for item in stream_response:
         item = item.replace("&", " ")
+        await asyncio.sleep(interval_sec)
         yield item
 
