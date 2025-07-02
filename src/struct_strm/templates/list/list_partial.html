@@ -1,0 +1,11 @@
+{#
+  Template for a partial list of items.
+  Renders a list of items using Jinja.
+  Uses Tailwind CSS for styling.
+#}
+<ul class="list-disc list-inside">
+  {% for item in items %}
+    <li class="p-2 text-gray-500">{{ item }}</li>
+  {% endfor %}
+</ul>
+
