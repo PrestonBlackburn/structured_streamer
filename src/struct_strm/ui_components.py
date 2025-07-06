@@ -3,11 +3,11 @@ import asyncio
 from dataclasses import dataclass, field
 from typing import Generator, List, AsyncGenerator
 from struct_strm.default_structs import (
-    DefaultListStruct, 
-    DefaultListItem, 
-    get_struct_keys
+    DefaultListStruct,
+    DefaultListItem,
+    get_struct_keys,
 )
-from struct_strm.template import template 
+from struct_strm.template import template
 from struct_strm.partial_parser import parse_list_json
 
 import logging
@@ -15,33 +15,27 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-
 @dataclass
 class AbstractComponent(ABC):
     """
-    Components may have 3 stages - 
+    Components may have 3 stages -
     1. pre llm response placeholder rendering
     2. partial rendering with the llm stream
     3. the complete render which may enrich the component
     """
 
     @abstractmethod
-    async def placeholder_render(
-            self, 
-            **kwargs) -> Generator[str, None, None]:
+    async def placeholder_render(self, **kwargs) -> Generator[str, None, None]:
         pass
 
     @abstractmethod
     async def partial_render(
-            self, 
-            response_stream: Generator[str, None, None],
-            **kwargs) -> Generator[str, None, None]:
+        self, response_stream: Generator[str, None, None], **kwargs
+    ) -> Generator[str, None, None]:
         pass
 
     @abstractmethod
-    async def complete_render(
-            self, 
-            **kwargs) -> Generator[str, None, None]:
+    async def complete_render(self, **kwargs) -> Generator[str, None, None]:
         pass
 
     @abstractmethod
@@ -54,11 +48,9 @@ class ListComponent(AbstractComponent):
     # mostly just a simple example for testing
     items: List[str] = field(default_factory=list)
     # default_struct: ListStruct = field(default_factory=ListStruct)
-    output: str = field(default="html") # either output html or incremental json
+    output: str = field(default="html")  # either output html or incremental json
 
-    async def placeholder_render(
-            self, 
-            **kwargs) -> AsyncGenerator[str, None]:
+    async def placeholder_render(self, **kwargs) -> AsyncGenerator[str, None]:
         # fetch placeholer template
         placeholder_template = template("list/list_placeholder.html")
         template_wrapper = template("list/list_container.html")
@@ -66,36 +58,36 @@ class ListComponent(AbstractComponent):
         yield template_wrapper.render(list_content=component_html)
 
     async def partial_render(
-            self, 
-            response_stream: AsyncGenerator[str, None], 
-            ListType = DefaultListStruct,
-            ItemType = DefaultListItem,
-            **kwargs) -> AsyncGenerator[str, None]:
+        self,
+        response_stream: AsyncGenerator[str, None],
+        ListType=DefaultListStruct,
+        ItemType=DefaultListItem,
+        **kwargs
+    ) -> AsyncGenerator[str, None]:
         # parse the string stream into objects that make sense
         partial_template = template("list/list_partial.html")
         template_wrapper = template("list/list_container.html")
         # example format (as json string):
         # """{"items": [{"item": "apple orange"}, {"item": "banana kiwi grape"}, {"item": "mango pineapple"}]}"""
         # basically just pull out "item" from the items list as they come
-        start_key = get_struct_keys(ListType)[0] # should only have one key
-        item_key = get_struct_keys(ItemType)[0] # should only have one item key
-        items_list: AsyncGenerator = parse_list_json(response_stream, start_key=start_key, item_key=item_key)
+        start_key = get_struct_keys(ListType)[0]  # should only have one key
+        item_key = get_struct_keys(ItemType)[0]  # should only have one item key
+        items_list: AsyncGenerator = parse_list_json(
+            response_stream, start_key=start_key, item_key=item_key
+        )
         async for streamed_items in items_list:
             self.items = streamed_items
             patial_template_html = partial_template.render(items=list(streamed_items))
-            yield template_wrapper.render(list_content = patial_template_html)
+            yield template_wrapper.render(list_content=patial_template_html)
 
-    async def complete_render(
-            self, 
-            **kwargs) -> AsyncGenerator[str, None]:
+    async def complete_render(self, **kwargs) -> AsyncGenerator[str, None]:
         # render complete component with processssing
         complete_template = template("list/list_complete.html")
         yield complete_template.render(items=self.items)
 
     async def render(
-            self, 
-            response_stream: AsyncGenerator[str, None], 
-            **kwargs) -> AsyncGenerator[str, None]:
+        self, response_stream: AsyncGenerator[str, None], **kwargs
+    ) -> AsyncGenerator[str, None]:
         # render the component in 3 stages
 
         async for item in self.placeholder_render(**kwargs):
@@ -106,4 +98,3 @@ class ListComponent(AbstractComponent):
             await asyncio.sleep(0.1)
         async for item in self.complete_render(**kwargs):
             yield item
-

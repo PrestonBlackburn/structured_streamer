@@ -1,24 +1,22 @@
 from typing import AsyncGenerator, List, Dict
 
 
-
-async def inside_start_key(buffer:str) -> bool:
+async def inside_start_key(buffer: str) -> bool:
     end_token = ""
 
     return bool
 
 
-async def inside_item_key(buffer:str) -> bool:
+async def inside_item_key(buffer: str) -> bool:
     end_token = ""
 
-
     return
+
 
 async def parse_list_json(
     response_stream: AsyncGenerator[str, None],
     start_key: str = "items",
     item_key: str = "item",
-
 ) -> AsyncGenerator[List[str], None]:
 
     buffer = ""
@@ -70,7 +68,6 @@ async def parse_list_json(
                         yield [item_values[i] for i in sorted(item_values.keys())]
 
 
-
 async def parse_list_json_updated(
     response_stream: AsyncGenerator[str, None],
     start_key: str = "items",
@@ -97,7 +94,7 @@ async def parse_list_json_updated(
                 if start_key in buffer:
                     inside_items = True
                     # Skip ahead to the part after the array start `[...]`
-                    idx = buffer.find('[')
+                    idx = buffer.find("[")
                     if idx != -1:
                         buffer = buffer[idx + 1 :]
                         i = 0
