@@ -10,5 +10,5 @@ async def test_list_component_partial_render():
     async for _ in component.render(response_stream=stream):
         pass
 
-    expected_items = ["apple orange", "banana kiwi grape", "mango pineapple"]
+    expected_items = ["apple orange strawberry", "banana kiwi grape", "mango pineapple"]
     assert component.items == expected_items

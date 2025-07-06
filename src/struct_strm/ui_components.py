@@ -7,8 +7,13 @@ from struct_strm.default_structs import (
     DefaultListItem, 
     get_struct_keys
 )
-from struct_strm.env import template 
+from struct_strm.template import template 
 from struct_strm.partial_parser import parse_list_json
+
+import logging
+
+_logger = logging.getLogger(__name__)
+
 
 
 @dataclass

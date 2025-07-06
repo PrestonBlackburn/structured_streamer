@@ -19,7 +19,9 @@ include-package-data = true
 dev = [
     "black",
     "pytest",
-    "pytest-cov[all]"
+    "pytest-cov[all]",
+    "openai",
+    "tiktoken"
 ]
 
 docs = [
