@@ -3,6 +3,9 @@ from typing import List, Union, Callable, AsyncGenerator, Dict, Type
 from openai.types.chat import ParsedChatCompletion
 from dataclasses import field
 # List example with openai
+import logging
+
+_logger = logging.getLogger(__name__)
 
 async def openai_stream_wrapper(
     user_query:str, 
@@ -27,10 +30,10 @@ async def openai_stream_wrapper(
         async for event in stream:
             if event.type == "content.delta":
                 delta = event.delta
-                print("Delta: ", delta) # get tokens for better mocks
+                _logger.debug(f"Delta: {delta}") # get tokens for better mocks
                 yield delta
             elif event.type == "content.done":
+                _logger.info("OpenAI stream complete")
                 pass
-                # print("content.done")
             elif event.type == "error":
-                print("Error in stream:", event.error)
+                _logger.error(f"Error in stream: {event.error}")
