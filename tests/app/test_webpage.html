@@ -12,7 +12,9 @@
     <div class="container mx-auto p-4">
         <h1 class="text-2xl font-bold mb-4">HTMX Streaming Test</h1>
 
+
         <!-- Testing Incremental List HTMX -->
+        <div> Test Mock List Stream HTMX </div>
         <button 
                 id="test-stream-list-btn" 
                 hx-get="/get_list_stream"
@@ -20,7 +22,7 @@
                 hx-target="#sse-list"
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             >
-            Test Simple Streaming
+            Test 
         </button>
 
         <div id="sse-list"></div>
@@ -29,6 +31,7 @@
 
 
         <!-- Testing Basic SSE HTMX -->
+        <div>    Test List Streaming HTMX </div>
         <button 
                 id="test-stream-btn" 
                 hx-get="/get_test_stream"
@@ -36,7 +39,7 @@
                 hx-target="#sse"
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             >
-            Test Simple Streaming
+            Test 
         </button>
 
         <div id="sse"></div>
@@ -44,13 +47,31 @@
         <!-- END - Testing Basic SSE HTMX -->
 
 
+        <!-- Testing Basic Openai List SSE HTMX -->
+            <div>Test OpenAI List Streaming</div>
+        <button 
+                id="test-stream-btn-openai" 
+                hx-get="/get_openai_test_stream"
+                hx-swap="innerHTML"
+                hx-target="#sse-openai-list"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+            Test 
+        </button>
+
+        <div id="sse-openai-list"></div>
+        <div id="stream-openai-list"></div>
+        <!-- END -Testing Basic Openai List SSE HTMX -->
+
+
 
         <!-- Testing Basic GET Request With JS -->
+            <div> Test Simple List Stream Response </div>
         <button 
             id="load-js-test-incremental"
             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             >
-            Load
+            Test
         </button>
         <div id="js-test-incremental-target"></div>
         <!-- END - Testing Basic GET Request With JS -->
