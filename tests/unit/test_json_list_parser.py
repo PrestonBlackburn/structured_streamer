@@ -1,6 +1,6 @@
 import pytest
 from struct_strm import parse_list_json
-from struct_strm.default_structs import (
+from struct_strm.structs.list_structs import (
     simulate_stream_list_struct,
     simulate_stream_openai
 )

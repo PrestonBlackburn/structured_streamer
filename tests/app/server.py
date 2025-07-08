@@ -2,12 +2,11 @@ from typing import AsyncGenerator
 import asyncio
 
 from struct_strm.llm_wrappers import openai_stream_wrapper
-from struct_strm.llm_clients import aget_openai_client
-from struct_strm.default_structs import DefaultListItem, DefaultListStruct
+from struct_strm.structs.list_structs import DefaultListItem, DefaultListStruct
 
 from struct_strm import ListComponent
 from struct_strm.ui_components import ListComponent
-from struct_strm.default_structs import simulate_stream_list_struct
+from struct_strm.structs.list_structs import simulate_stream_list_struct
 
 from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse, HTMLResponse

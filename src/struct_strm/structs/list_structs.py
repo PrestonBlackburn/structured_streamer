@@ -1,11 +1,7 @@
 import asyncio
 import time
-from typing import List, Generator, Dict, Union, AsyncGenerator
+from typing import List, AsyncGenerator
 from pydantic import BaseModel
-
-
-def get_struct_keys(struct: BaseModel) -> List[str]:
-    return list(struct.model_fields.keys())
 
 
 class DefaultListItem(BaseModel):
