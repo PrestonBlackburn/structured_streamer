@@ -19,7 +19,7 @@ async def simulate_stream_form_struct(
 ) -> AsyncGenerator[str, None]:
     # Simulate a stream from a structured generator like OpenAI
     list_struct = DefaultFormStruct(
-        items=[
+        form_fields=[
             DefaultFormItem(field_name= "fruits", field_placeholder="apple &orange &straw&berry"),
             DefaultFormItem(field_name="appliance", field_placeholder="blender &mixer &toaster"),
             DefaultFormItem(field_name="dishes", field_placeholder="plate &bowl"),
@@ -53,7 +53,7 @@ async def simulate_stream_form_openai(
         "field_name",
         '":"',
         "fruits",
-        '."',
+        '"',
         "field_placeholder",
         '":"',
         "apple",
@@ -65,7 +65,7 @@ async def simulate_stream_form_openai(
         "field_name",
         '":"',
         "appliance",
-        '."',
+        '"',
         "field_placeholder",
         '":"',
         "blender",
