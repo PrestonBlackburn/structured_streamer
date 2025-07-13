@@ -11,8 +11,10 @@ def get_struct_keys(struct: BaseModel) -> List[str]:
 class DefaultRow(BaseModel):
     row: str
 
+
 class DefaultHeaders(BaseModel):
     header: str
+
 
 class DefaultTableStruct(BaseModel):
     # mostly just for testing

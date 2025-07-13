@@ -5,17 +5,21 @@ from typing import List
 # so based on the headers we get back we can construct a class dynamically
 # This is actually a 2 parter, since we need to do one generation after another - will need another approach
 
+
 class DefaultCriteria(BaseModel):
     # "Y"
     criteria: str
+
 
 class DefaultCategory(BaseModel):
     # "X"
     category: str
 
+
 class DefaultOutlineRubric:
     criteria: DefaultCriteria
     category: DefaultCategory
+
 
 class DefaultCell(BaseModel):
     criteria: DefaultCriteria

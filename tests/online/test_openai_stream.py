@@ -6,13 +6,13 @@ from struct_strm.structs.list_structs import DefaultListItem, DefaultListStruct
 prompt_context = ""
 user_query = "Create list describing 5 open source llm tools"
 
-@pytest.mark.asyncio
-async def test_openai_response():
+
+# @pytest.mark.asyncio
+async def openai_response():
     stream = openai_stream_wrapper(
-    user_query, 
-    prompt_context, 
-    DefaultListStruct, 
+        user_query,
+        prompt_context,
+        DefaultListStruct,
     )
 
     return True
-

@@ -8,6 +8,7 @@ class DefaultFormItem(BaseModel):
     field_name: str
     field_placeholder: str
 
+
 class DefaultFormStruct(BaseModel):
     # mostly just for testing
     form_fields: List[DefaultFormItem]
@@ -20,8 +21,12 @@ async def simulate_stream_form_struct(
     # Simulate a stream from a structured generator like OpenAI
     list_struct = DefaultFormStruct(
         form_fields=[
-            DefaultFormItem(field_name= "fruits", field_placeholder="apple &orange &straw&berry"),
-            DefaultFormItem(field_name="appliance", field_placeholder="blender &mixer &toaster"),
+            DefaultFormItem(
+                field_name="fruits", field_placeholder="apple &orange &straw&berry"
+            ),
+            DefaultFormItem(
+                field_name="appliance", field_placeholder="blender &mixer &toaster"
+            ),
             DefaultFormItem(field_name="dishes", field_placeholder="plate &bowl"),
         ]
     )

@@ -76,6 +76,23 @@
         <div id="js-test-incremental-target"></div>
         <!-- END - Testing Basic GET Request With JS -->
 
+
+        <!-- Testing Basic Form SSE HTMX -->
+        <div> Test Mock Form Stream HTMX </div>
+        <button 
+                id="test-stream-form-btn" 
+                hx-get="/get_form_stream"
+                hx-swap="innerHTML"
+                hx-target="#sse-form"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+            Test 
+        </button>
+
+        <div id="sse-form"></div>
+        <div id="stream-form"></div>
+        <!-- END -Testing Basic  Form SSE HTMX -->
+
     </div>
 
 </body>

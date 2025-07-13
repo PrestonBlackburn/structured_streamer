@@ -22,6 +22,7 @@ _logger = logging.getLogger(__name__)
 def get_struct_keys(struct: BaseModel) -> List[str]:
     return list(struct.model_fields.keys())
 
+
 @dataclass
 class AbstractComponent(ABC):
     """
@@ -69,7 +70,7 @@ class ListComponent(AbstractComponent):
         response_stream: AsyncGenerator[str, None],
         ListType=DefaultListStruct,
         ItemType=DefaultListItem,
-        **kwargs
+        **kwargs,
     ) -> AsyncGenerator[str, None]:
         # parse the string stream into objects that make sense
         partial_template = template("list/list_partial.html")
@@ -93,9 +94,7 @@ class ListComponent(AbstractComponent):
         yield complete_template.render(items=self.items)
 
     async def render(
-        self, 
-        response_stream: AsyncGenerator[str, None], 
-        **kwargs
+        self, response_stream: AsyncGenerator[str, None], **kwargs
     ) -> AsyncGenerator[str, None]:
         # render the component in 3 stages
 
@@ -111,7 +110,7 @@ class ListComponent(AbstractComponent):
 
 @dataclass
 class FormComponent(AbstractComponent):
-    form_fields: List[Dict[str, str]]
+    form_fields: List[Dict[str, str]] = field(default_factory=list)
     output: str = field(default="html")  # either output html or incremental json
 
     async def placeholder_render(self, **kwargs) -> AsyncGenerator[str, None]:
@@ -125,38 +124,38 @@ class FormComponent(AbstractComponent):
         response_stream: AsyncGenerator[str, None],
         FormType=DefaultFormStruct,
         FormFieldType=DefaultFormItem,
-        **kwargs
+        **kwargs,
     ) -> AsyncGenerator[str, None]:
         partial_template = template("form/form_partial.html")
         template_wrapper = template("form/form_container.html")
 
         # should probably be user input...
         start_key = get_struct_keys(FormType)[0]  # should only have one key
-        field_name_key = get_struct_keys(FormFieldType)[0]  # should only have one item key
+        field_name_key = get_struct_keys(FormFieldType)[
+            0
+        ]  # should only have one item key
         field_description_key = get_struct_keys(FormFieldType)[1]
 
-        form_items_list: AsyncGenerator = parse_form_json_fsm(
-            response_stream, start_key=start_key, 
-            field_name_key=field_name_key, 
-            field_description_key=field_description_key
+        form_items_response: AsyncGenerator = parse_form_json_fsm(
+            response_stream,
+            start_key=start_key,
+            field_name_key=field_name_key,
+            field_description_key=field_description_key,
         )
 
-        async for streamed_items in form_items_list:
-            self.form = streamed_items
-            patial_template_html = partial_template.render(form=list(streamed_items))
+        async for streamed_items in form_items_response:
+            streamed_list = [streamed_items[i] for i in sorted(streamed_items.keys())]
+            self.form = streamed_list
+            patial_template_html = partial_template.render(form=list(streamed_list))
             yield template_wrapper.render(list_content=patial_template_html)
 
-        
     async def complete_render(self, **kwargs) -> AsyncGenerator[str, None]:
         # render complete component with processssing
         complete_template = template("form/form_complete.html")
         yield complete_template.render(form=self.form)
 
-    
     async def render(
-        self, 
-        response_stream: AsyncGenerator[str, None], 
-        **kwargs
+        self, response_stream: AsyncGenerator[str, None], **kwargs
     ) -> AsyncGenerator[str, None]:
         # render the component in 3 stages
 
@@ -165,6 +164,6 @@ class FormComponent(AbstractComponent):
             await asyncio.sleep(0.25)
         async for item in self.partial_render(response_stream, **kwargs):
             yield item
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.05)
         async for item in self.complete_render(**kwargs):
             yield item

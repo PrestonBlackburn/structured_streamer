@@ -7,6 +7,7 @@ name = "struct_strm"
 version = "0.0.1"
 description = "Structured Streaming Lib For UI Components"
 readme = "readme.md"
+requires-python = ">= 3.8"
 dependencies = [
     "pydantic",
     "Jinja2"
@@ -15,13 +16,24 @@ dependencies = [
 [tool.setuptools]
 include-package-data = true
 
+[tool.pytest.ini_options]
+asyncio_default_test_loop_scope = "module"
+
 [project.optional-dependencies]
 dev = [
     "black",
     "pytest",
     "pytest-cov[all]",
     "openai",
-    "tiktoken"
+    "tiktoken",
+    "pytest-playwright",
+    "pytest-asyncio",
+    "uvicorn",
+    "fastapi",
+    "sse-starlette",
+    "python-multipart",
+    "python-on-whales",
+    "requests"
 ]
 
 docs = [
