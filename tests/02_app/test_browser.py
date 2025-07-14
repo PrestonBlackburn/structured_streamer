@@ -14,24 +14,14 @@ def test_simple_list_stream(page: Page, fastapi_env: dict, wait_for_fastapi):
     page.goto(f"localhost:{fastapi_env['port']}")
     page.locator("#test-stream-list-btn").click(timeout=1000)
     # the server response (htmx)
-    # page.wait_for_selector("#sse-list-container")
-    expect(page.locator("#list-card")).to_be_visible()
-    # page.wait_for_selector("#list-card", timeout=10000)
-    # can do this better later
-    time.sleep(3)
-    list_items = page.locator("li")
-    count_li = list_items.count()
-    assert count_li > 1
+    expect(page.locator("#list-card").first).to_be_visible(timeout=5000)
+    expect(page.locator("li")).to_have_count(3, timeout=10000)
     page.close()
 
 
 def test_simple_form_stream(page: Page, fastapi_env: dict, wait_for_fastapi):
     page.goto(f"localhost:{fastapi_env['port']}")
     page.locator("#test-stream-form-btn").click(timeout=1000)
-    expect(page.locator("#form-card")).to_be_visible()
-    # page.wait_for_selector("#form-card", timeout=10000)
-    time.sleep(3)
-    form_items = page.locator("label")
-    count_form_item = form_items.count()
-    assert count_form_item > 1
+    expect(page.locator("#form-card").first).to_be_visible(timeout=5000)
+    expect(page.locator("label")).to_have_count(3, timeout=10000)
     page.close()

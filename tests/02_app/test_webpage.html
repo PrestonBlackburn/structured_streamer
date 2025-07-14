@@ -13,23 +13,6 @@
         <h1 class="text-2xl font-bold mb-4">HTMX Streaming Test</h1>
 
 
-        <!-- Testing Incremental List HTMX -->
-        <div> Test Mock List Stream HTMX </div>
-        <button 
-                id="test-stream-list-btn" 
-                hx-get="/get_list_stream"
-                hx-swap="innerHTML"
-                hx-target="#sse-list"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >
-            Test 
-        </button>
-
-        <div id="sse-list"></div>
-        <div id="stream-list"></div>
-        <!-- Testing Incremental List HTMX -->
-
-
         <!-- Testing Basic SSE HTMX -->
         <div>    Test List Streaming HTMX </div>
         <button 
@@ -46,6 +29,21 @@
         <div id="stream-content"></div>
         <!-- END - Testing Basic SSE HTMX -->
 
+                <!-- Testing Incremental List HTMX -->
+        <div> Test Mock List Stream HTMX </div>
+        <button 
+                id="test-stream-list-btn" 
+                hx-get="/get_list_stream"
+                hx-swap="innerHTML"
+                hx-target="#sse-list"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+            Test 
+        </button>
+
+        <div id="sse-list"></div>
+        <div id="stream-list"></div>
+        <!-- Testing Incremental List HTMX -->
 
         <!-- Testing Basic Openai List SSE HTMX -->
             <div>Test OpenAI List Streaming</div>
