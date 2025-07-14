@@ -68,7 +68,12 @@ This library also provides some convience functions for serving html components 
 
 Since we are streaming structured outputs for the purpose of using them in the UI, we know we need several features, such as a pre-response placeholder, streaming reading/updates, and a final post response indicator. Right now I have some minimal implementations included in this library. They are not super customizable yet, but can serve as references for your projects.
 
-<br/>
+<br/>  
+
+
+![Example Form Streaming](img/form_struct_strm.gif)
+
+<br/>  
 
 Example usage with FastAPI and HTMX:
 ```python

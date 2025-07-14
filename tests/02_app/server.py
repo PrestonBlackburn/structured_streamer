@@ -19,7 +19,7 @@ from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
 
-templates = Jinja2Templates(directory="tests/app")
+templates = Jinja2Templates(directory="tests/02_app")
 
 
 @app.get("/")

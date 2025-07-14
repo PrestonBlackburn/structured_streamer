@@ -1,4 +1,5 @@
 # https://squidfunk.github.io/mkdocs-material/publishing-your-site/#with-github-actions-material-for-mkdocs
+# also generating cov as part of this
 name: docs
 
 on:
@@ -28,6 +29,7 @@ jobs:
           
       - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV 
       
+
       - uses: actions/cache@v4
         with:
           key: mkdocs-material-${{ env.cache_id }}
@@ -35,5 +37,28 @@ jobs:
           restore-keys: |
             mkdocs-material-
       - run: |
+          pip install .[dev]
           pip install .[docs]
+          playwright install
+
+          # Run coverage
+          pytest --cov=my_package --cov-report=term
+
+          # Extract percentage
+          COVERAGE=$(coverage report | grep TOTAL | awk '{print $4}' | sed 's/%//')
+
+          # Determine color
+          COLOR="red"
+          if [ "$COVERAGE" -ge 90 ]; then COLOR="brightgreen"
+          elif [ "$COVERAGE" -ge 75 ]; then COLOR="yellow"
+          elif [ "$COVERAGE" -ge 50 ]; then COLOR="orange"
+          fi
+
+          # Make sure assets dir exists
+          mkdir -p docs/assets
+
+          # Generate badge via shields.io
+          curl "https://img.shields.io/badge/coverage-${COVERAGE}%25-${COLOR}.svg" \
+            --output docs/assets/coverage.svg
+          
           mkdocs gh-deploy --force

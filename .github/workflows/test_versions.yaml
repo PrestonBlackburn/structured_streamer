@@ -1,13 +1,14 @@
-name: test
+name: test versions
 
 on:
   pull_request:
     branches: 
       - main
+      - dev
 
 
 jobs:
-  test:
+  test_versions:
     name: testing
     runs-on: ubuntu-latest
     strategy:
@@ -28,4 +29,4 @@ jobs:
         run: | 
           pip install .[dev]
           playwright install
-          pytest --cov=struct_strm tests/
+          pytest 
