@@ -13,7 +13,14 @@ def test_page_load(page: Page, fastapi_env: dict, wait_for_fastapi):
 def test_simple_list_stream(page: Page, fastapi_env: dict, wait_for_fastapi):
     page.goto(f"localhost:{fastapi_env['port']}")
     page.wait_for_load_state("domcontentloaded")
-    page.locator("#test-stream-list-btn").click(timeout=2000)
+    button = page.locator("#test-stream-list-btn")
+    expect(button).to_be_visible(timeout=5000)
+    expect(button).to_be_enabled()
+    button.click(timeout=2000)
+
+    # Wait for HTMX to inject the SSE container
+    page.wait_for_selector("#sse-list-container", state="attached", timeout=5000)
+
     # the server response (htmx)
     expect(page.locator("#list-card").first).to_be_visible(timeout=10000)
     expect(page.locator("li")).to_have_count(3, timeout=10000)
