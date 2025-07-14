@@ -1,0 +1,43 @@
+# https://hatch.pypa.io/1.13/how-to/publish/auth/
+name: build
+
+on:
+  pull_request:
+    branches: 
+      - main
+
+jobs:
+  deploy:
+    name: build
+    runs-on: ubuntu-latest
+
+    # environment: release
+    # permissions:
+    #   id-token: write
+      
+  steps:
+    - uses: actions/checkout@v4
+    - name: Setup Python Build
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Display Python version
+      run: python -c "import sys; print(sys.version)"
+
+    # create hatch env 
+    - name: Install Hatch
+      run: | 
+        python -m pip install --upgrade pip
+        pip install hatch
+
+    - name: Build Hatch + Test
+      run: |
+        hatch env create test
+        hatch build
+        hatch run test:pytest
+        hatch version micro
+        hatch version release
+
+    # - name: Publish package distributions to PyPI
+    #   uses: pypa/gh-action-pypi-publish@release/v1

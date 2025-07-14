@@ -1,7 +1,11 @@
 site_name: "Structured Streamer" 
 
+extra_css:
+  - stylesheets/extra.css
+
 nav:
-  - Home: index.md
+  - About: index.md
+  - Getting Started: getting_started.md
 
 plugins: 
   - techdocs-core

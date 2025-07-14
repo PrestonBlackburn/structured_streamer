@@ -7,8 +7,7 @@ RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 # Copy the source code and project definition
-COPY ./src /app/src
-COPY pyproject.toml /app/
+COPY ./ /app
 
 # Install the project and its dependencies
 RUN pip install --no-cache-dir .[dev] 

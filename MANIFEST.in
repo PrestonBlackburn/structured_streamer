@@ -1,8 +1,9 @@
 # example include
 include LICENSE
+include src/struct_strm/templates/form
 
 # exmaple template include
-recursive-include src/struct_strm/templates *.html
+recursive-include src/struct_strm/templates/** *.html
 
 # example exclude
 recursive-exclude .devcontainer *

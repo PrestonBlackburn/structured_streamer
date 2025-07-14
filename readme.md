@@ -1,4 +1,4 @@
-![structured_streamer_logo](docs/img/logo_with_background.png)
+![structured_streamer_logo](docs/img/logo_bg_wide.png)
 
 # Structured Streamer
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/PrestonBlackburn/structured_streamer/blob/main/LICENSE)
