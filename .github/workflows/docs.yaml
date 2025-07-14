@@ -42,7 +42,7 @@ jobs:
           playwright install
 
           # Run coverage
-          pytest --cov=my_package --cov-report=term
+          pytest --cov=struct_strm --cov-report=term
 
           # Extract percentage
           COVERAGE=$(coverage report | grep TOTAL | awk '{print $4}' | sed 's/%//')
