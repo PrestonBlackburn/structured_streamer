@@ -36,6 +36,7 @@ jobs:
       - name: Build Hatch + Test
         run: |
           hatch env create test
+          playwright install
           hatch build
           hatch run test:pytest
           hatch version micro
