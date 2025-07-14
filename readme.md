@@ -31,10 +31,33 @@ Due to the nature of partial json streaming, there can be "wrong" ways to stream
 
 
 
-## Usage
+## Example Component
+This is an example of a form component being incrementally rendered. By using a structured query response from an LLM, in this case a form with form field names and field placeholders, we can stream the form results directly to a HTML component. This drastically reduces the time to first token, and the precieved time that a user needs to wait. More advanced components are under development. 
 
-*Comming Soon!*  
+```python
 
+class DefaultFormItem(BaseModel):
+    field_name: str
+    field_placeholder: str
+
+class DefaultFormStruct(BaseModel):
+    form_fields: List[DefaultFormItem]
+
+# a typical openai structured response stream may look like: 
+...
+async with client.beta.chat.completions.stream(
+    model="gpt-4.1",
+    messages=messages,
+    response_format=DefaultFormStruct,
+    temperature=0.0,
+) as stream:
+    async for event in stream:
+        ...
+# where the resulting stream is used to incrementally build the component
+# (shown below)
+```
+
+![Example Form Streaming](docs/img/form_struct_strm.gif)
 
 ## Contributing
 

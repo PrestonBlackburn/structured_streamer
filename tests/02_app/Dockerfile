@@ -12,7 +12,7 @@ COPY ./ /app
 # Install the project and its dependencies
 RUN pip install --no-cache-dir .[dev] 
 # Copy the test application
-COPY ./tests/02_app /app/tests/app
+COPY ./tests/02_app /app/tests/02_app
 
 EXPOSE 8000
 
