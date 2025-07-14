@@ -14,5 +14,4 @@ async def openai_response():
         prompt_context,
         DefaultListStruct,
     )
-
     return True
