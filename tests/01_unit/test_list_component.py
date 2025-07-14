@@ -1,7 +1,7 @@
-
 import pytest
 from struct_strm.ui_components import ListComponent
-from struct_strm.default_structs import simulate_stream_list_struct
+from struct_strm.structs.list_structs import simulate_stream_list_struct
+
 
 @pytest.mark.asyncio
 async def test_list_component_partial_render():

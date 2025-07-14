@@ -1,19 +1,41 @@
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "struct_strm"
-version = "0.0.1"
 description = "Structured Streaming Lib For UI Components"
 readme = "readme.md"
+requires-python = ">= 3.8"
 dependencies = [
     "pydantic",
     "Jinja2"
 ]
+dynamic = [
+  "version"
+]
 
-[tool.setuptools]
-include-package-data = true
+[tool.hatch.version]
+path = "src/struct_strm/__about__.py"
+
+[tool.hatch.build]
+sources = ["src"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "src/struct_strm",
+  "src/struct_strm/templates/**/*.html",
+  "readme.md"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/struct_strm"]
+include = [
+  "src/struct_strm/templates/**/*.html"
+]
+
+[tool.pytest.ini_options]
+asyncio_default_test_loop_scope = "module"
 
 [project.optional-dependencies]
 dev = [
@@ -21,10 +43,42 @@ dev = [
     "pytest",
     "pytest-cov[all]",
     "openai",
-    "tiktoken"
+    "tiktoken",
+    "pytest-playwright",
+    "pytest-asyncio",
+    "uvicorn",
+    "fastapi",
+    "sse-starlette",
+    "python-multipart",
+    "python-on-whales",
+    "requests"
 ]
 
 docs = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocs-techdocs-core"
+]
+
+[tool.hatch.envs.test]
+dependencies = [
+    "black",
+    "pytest",
+    "pytest-cov",
+    "openai",
+    "tiktoken",
+    "pytest-playwright",
+    "pytest-asyncio",
+    "uvicorn",
+    "fastapi",
+    "sse-starlette",
+    "python-multipart",
+    "python-on-whales",
+    "requests"
+]
+
+[tool.hatch.envs.docs]
+dependencies = [
     "mkdocs",
     "mkdocs-material",
     "mkdocs-techdocs-core"

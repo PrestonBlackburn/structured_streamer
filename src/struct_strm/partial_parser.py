@@ -1,16 +1,10 @@
-from typing import AsyncGenerator, List, Dict
+from typing import AsyncGenerator, List, Dict, Tuple, Optional, Type, Union
+import enum
+from copy import deepcopy
+from abc import ABC, abstractmethod
+import logging
 
-
-async def inside_start_key(buffer: str) -> bool:
-    end_token = ""
-
-    return bool
-
-
-async def inside_item_key(buffer: str) -> bool:
-    end_token = ""
-
-    return
+_logger = logging.getLogger(__name__)
 
 
 async def parse_list_json(
@@ -23,7 +17,6 @@ async def parse_list_json(
     inside_items = False
     inside_item = False
     current_item_value = ""
-    items: List[str] = []
     item_idx = -1
     item_values: Dict[int, str] = {}
 
@@ -68,93 +61,233 @@ async def parse_list_json(
                         yield [item_values[i] for i in sorted(item_values.keys())]
 
 
-async def parse_list_json_updated(
-    response_stream: AsyncGenerator[str, None],
-    start_key: str = "items",
-    item_key: str = "item",
-) -> AsyncGenerator[List[str], None]:
-    buffer = ""
-    inside_items = False
-    inside_item = False
-    capturing_value = False
-    escape_next = False
+# ------ Messing Around with a State Machine ----------
+# For some reason I thought this would make it easier?
 
-    item_idx = -1
-    current_item_value = ""
-    item_values: Dict[int, str] = {}
 
-    async for chunk in response_stream:
-        buffer += chunk
+class FormState(ABC):
+    @abstractmethod
+    async def execute(
+        self, buffer: str, current_chunk: str
+    ) -> AsyncGenerator[str, None]: ...
 
-        i = 0
-        while i < len(buffer):
-            char = buffer[i]
+    @abstractmethod
+    async def next_state(self) -> AsyncGenerator[Union[Type, "FormState"], None]: ...
 
-            if not inside_items:
-                if start_key in buffer:
-                    inside_items = True
-                    # Skip ahead to the part after the array start `[...]`
-                    idx = buffer.find("[")
-                    if idx != -1:
-                        buffer = buffer[idx + 1 :]
-                        i = 0
-                        continue
-                    else:
-                        buffer = ""
-                        break
-                else:
-                    # Still waiting for the items key
-                    break
 
-            # Find start of a new object
-            if not inside_item and char == "{":
-                inside_item = True
-                current_item_value = ""
-                i += 1
-                continue
+class FormDescState(FormState):
+    def __init__(
+        self,
+        results: dict,
+        field_description_key: str = "field_placeholder",
+        field_idx: int = -1,
+    ):
+        self.results = results
+        self.in_state = False
+        # self.in_pair = True
+        self.field_description_key = field_description_key
+        self.field_idx = field_idx
+        self.desc = ""
 
-            # Look for "item" key
-            if inside_item and not capturing_value:
-                if buffer[i:].startswith(f'"{item_key}"'):
-                    # Move past `"item"` and optional `:`
-                    end_idx = buffer.find(":", i + len(item_key) + 2)
-                    if end_idx != -1:
-                        i = end_idx + 1
-                        # Look for opening quote of value
-                        while i < len(buffer) and buffer[i] != '"':
-                            i += 1
-                        if i < len(buffer) and buffer[i] == '"':
-                            capturing_value = True
-                            i += 1
-                        continue
-                    else:
-                        break  # Wait for more chars
-                else:
-                    i += 1
-                    continue
+    async def execute(
+        self, buffer: str, current_chunk: str
+    ) -> AsyncGenerator[str, None]:
+        _logger.debug("execute FormDescState")
+        item_termintors = {
+            '"',
+            "'",
+            ",",
+        }  # TODO - see if we can prompt for better terminators
+        pair_terminators = {"}", "]", "},", '},{"', "}]"}  # go back to name
 
-            # Capture value
-            elif inside_item and capturing_value:
-                if escape_next:
-                    current_item_value += char
-                    escape_next = False
-                elif char == "\\":
-                    escape_next = True
-                elif char == '"':
-                    # End of value
-                    item_idx += 1
-                    clean = current_item_value.strip()
-                    item_values[item_idx] = clean
-                    yield [item_values[i] for i in sorted(item_values)]
-                    # Reset state
-                    inside_item = False
-                    capturing_value = False
-                    current_item_value = ""
-                else:
-                    current_item_value += char
-                i += 1
-                continue
+        if not self.in_state and f'"{self.field_description_key}":' in buffer:
+            self.in_state = True
+
+            key_idx = buffer.find(f'"{self.field_description_key}":')
+            if key_idx != -1:
+                buffer = buffer[key_idx + len(f'"{self.field_description_key}":') :]
             else:
-                i += 1
+                buffer = ""
 
-        buffer = ""  # Reset buffer each round after processing
+        if self.in_state:
+            # check for terminators + append current values
+            if any(value in current_chunk for value in pair_terminators):
+                # if it is a terminator don't add it to the result set
+                self.in_state = False
+                self.desc = ""
+                buffer = current_chunk
+
+            elif current_chunk not in item_termintors:
+                _logger.debug(f"Desc chunk: {current_chunk}")
+                self.desc += current_chunk
+                self.desc = self.desc.strip('"').strip(",")
+                self.results[self.field_idx][self.field_description_key] = self.desc
+            else:
+                # reset
+                self.in_state = False
+                self.desc = ""
+
+            return buffer
+
+        # if self.in_pair and current_chunk in pair_terminators:
+        #     self.in_pair = False
+
+        return buffer
+
+    async def next_state(self) -> AsyncGenerator[Union[Type, Dict], None]:
+        # in/out
+        if self.in_state:
+            return self
+        if not self.in_state:  # and not self.in_pair:
+            return FormNameState(
+                results=self.results,
+                field_description_key=self.field_description_key,
+                field_idx=self.field_idx,
+            )
+
+
+class FormNameState(FormState):
+    def __init__(
+        self,
+        results: dict,
+        field_name_key: str = "field_name",
+        field_description_key: str = "field_placeholder",
+        field_idx: int = -1,
+    ):
+        self.results = results
+        self.in_state = False
+        self.field_name_key = field_name_key
+        self.field_description_key = field_description_key
+        self.field_idx = field_idx
+        self.name = ""
+
+    async def execute(
+        self, buffer: str, current_chunk: str
+    ) -> AsyncGenerator[str, None]:
+        _logger.debug("execute FormNameState")
+        item_termintors = {
+            '"',
+            "'",
+            ",",
+            f"{self.field_description_key}",
+        }  # TODO - see if we can prompt for better terminators
+        pair_terminators = {
+            "}",
+            "]",
+            "},",
+            '},{"',
+            "}]",
+            f'"{self.field_description_key}"',
+        }
+
+        if not self.in_state and f'"{self.field_name_key}":' in buffer:
+            _logger.debug(f"IN FIELD NAME: {buffer}")
+            self.in_state = True
+            # init new row
+            self.field_idx += 1
+            self.results.update(
+                {
+                    self.field_idx: {
+                        self.field_name_key: "",
+                        self.field_description_key: "",
+                    }
+                }
+            )
+            _logger.debug(f"Added Results: {self.results}")
+            key_idx = buffer.find(f'"{self.field_description_key}":')
+            if key_idx != -1:
+                buffer = buffer[key_idx + len(f'"{self.field_description_key}":') :]
+            else:
+                buffer = ""
+
+        if self.in_state:
+            if any(term in current_chunk for term in pair_terminators):
+                _logger.debug(f"Name done: {self.name}")
+                self.in_state = False
+                self.name = ""
+            # check for terminators + append current values
+            elif current_chunk not in item_termintors:
+                _logger.debug(f"NAME CHUNK: {current_chunk}")
+                self.name += current_chunk
+                self.name = self.name.strip().strip('"').strip(",")
+                self.results[self.field_idx][self.field_name_key] = self.name
+            else:
+                # reset
+                self.in_state = False
+                self.name = ""
+        return buffer
+
+    async def next_state(self) -> AsyncGenerator[Type, None]:
+        # in/out
+        if self.in_state:
+            return self
+        else:
+            return FormDescState(
+                results=self.results,
+                field_description_key=self.field_description_key,
+                field_idx=self.field_idx,
+            )
+
+
+class FormInitState(FormState):
+    # entry
+    def __init__(
+        self,
+        results: dict,
+        start_key: str = "form_fields",
+        field_name_key: str = "field_name",
+        field_description_key: str = "field_placeholder",
+        field_idx: int = -1,
+    ):
+        self.results = results
+        self.in_state = False
+        self.start_key = start_key
+        self.field_name_key = field_name_key
+        self.field_description_key = field_description_key
+        self.field_idx = field_idx
+
+    async def execute(
+        self, buffer: str, current_chunk: str
+    ) -> AsyncGenerator[str, None]:
+        _logger.debug("execute FormInitState")
+        if not self.in_state and f'"{self.start_key}":' in buffer:
+            self.in_state = True
+            # start getting the content
+            buffer = buffer.split(self.start_key, 1)[1]
+            return buffer
+        return buffer
+
+    async def next_state(self) -> AsyncGenerator[Type, None]:
+        # in/out
+        if self.in_state == True:
+            return FormNameState(
+                self.results,
+                field_name_key=self.field_name_key,
+                field_description_key=self.field_description_key,
+                field_idx=self.field_idx,
+            )
+        if self.in_state == False:
+            pass
+
+
+async def parse_form_json_fsm(
+    response_stream: AsyncGenerator[str, None],
+    start_key: str = "form_fields",
+    field_name_key: str = "field_name",
+    field_description_key: str = "field_placeholder",
+) -> AsyncGenerator[dict, None]:
+    results = {}
+    buffer = ""
+    state = FormInitState(
+        results,
+        start_key=start_key,
+        field_name_key=field_name_key,
+        field_description_key=field_description_key,
+    )
+    async for chunk in response_stream:
+        buffer = buffer + chunk
+        buffer = await state.execute(buffer, chunk)
+        next_state = await state.next_state()
+        if next_state and next_state != state:
+            state = next_state
+        yield deepcopy(state.results)

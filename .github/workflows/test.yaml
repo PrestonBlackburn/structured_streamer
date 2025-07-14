@@ -1,0 +1,31 @@
+name: test
+
+on:
+  pull_request:
+    branches: 
+      - main
+
+
+jobs:
+  test:
+    name: testing
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+      
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+
+      - name: Install Deps and test
+        run: | 
+          pip install .[dev]
+          playwright install
+          pytest --cov=struct_strm tests/

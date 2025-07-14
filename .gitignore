@@ -6,3 +6,7 @@
 **/build/**
 venv/**
 GEMINI.md
+.coverage
+coverage.xml
+dist/**
+
