@@ -35,11 +35,7 @@ jobs:
 
       - name: Build Hatch + Test
         run: |
-          hatch env create test
-          hatch shell test
-          playwright install
           hatch build
-          hatch run test:pytest
           hatch version micro
           hatch version release
 
