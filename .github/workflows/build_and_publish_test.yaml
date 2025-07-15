@@ -3,8 +3,8 @@ name: build
 
 on:
   push:
-    branches: 
-      - main
+    branches:
+      - dev
 
 jobs:
   deploy:
@@ -39,5 +39,7 @@ jobs:
           hatch version micro
           hatch version release
 
-      - name: Publish to PyPI
+      - name: Publish package distributions to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
