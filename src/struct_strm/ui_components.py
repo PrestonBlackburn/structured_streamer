@@ -15,16 +15,13 @@ from struct_strm.partial_parser import (
     parse_list_json,
     parse_form_json_fsm,
     parse_form_json_ts,
+    get_struct_keys,
 )
 from pydantic import BaseModel
 
 import logging
 
 _logger = logging.getLogger(__name__)
-
-
-def get_struct_keys(struct: BaseModel) -> List[str]:
-    return list(struct.model_fields.keys())
 
 
 @dataclass

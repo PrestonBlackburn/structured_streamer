@@ -7,7 +7,13 @@ from copy import deepcopy
 from abc import ABC, abstractmethod
 import logging
 
+from pydantic import BaseModel
+
 _logger = logging.getLogger(__name__)
+
+
+def get_struct_keys(struct: BaseModel) -> List[str]:
+    return list(struct.model_fields.keys())
 
 
 async def parse_list_json(
@@ -378,3 +384,72 @@ async def parse_form_json_ts(
 #   { "title": "Top Gun", "genre": "Action", "rating": 8.3 },
 #   { "title": "Amélie", "genre": "Romance", "rating": 8.4 }
 # ]
+# class ExampleRow:
+#     title: "Top Gun"
+#     genre: "Action"
+#     rating: "8.3"
+
+
+async def query_table_json_struct(
+    snapshot: str, row_struct: BaseModel, parser: Parser, lang: Language
+) -> list[dict[str, str]]:
+
+    query_string = """
+    (pair
+        key: (string) @key
+        value: (string) @value) @pair
+    """
+    row_struct_fields = get_struct_keys(row_struct)
+    result_placeholder = {}
+    for field in row_struct_fields:
+        result_placeholder.update({field: ""})
+
+    query_results = {}
+    tree = parser.parse(snapshot)
+    query = Query(lang, query_string)
+    # captures = QueryCursor(query).captures(tree.root_node)
+    matches = QueryCursor(query).matches(tree.root_node)
+
+    pair_count = -1
+    for idx, capture_dict in matches:
+        key_nodes = capture_dict.get("key")
+        value_nodes = capture_dict.get("value")
+        if key_nodes is None or value_nodes is None:
+            continue
+        key_node = key_nodes[0]
+        value_node = value_nodes[0]
+        # ex: field_name or field_placeholder
+        pair_key = (
+            snapshot[key_node.start_byte : key_node.end_byte].decode("utf8").strip('"')
+        )
+        # ex: "fruits" or "apple banana..."
+        pair_value = (
+            snapshot[value_node.start_byte : value_node.end_byte]
+            .decode("utf8")
+            .strip('"')
+        )
+        if pair_key == row_struct_fields[0]:
+            pair_count += 1
+            query_results.update({pair_count: result_placeholder.copy()})
+        if pair_count >= 0 and pair_count in query_results:
+            query_results[pair_count].update({pair_key: pair_value})
+    return query_results
+
+
+async def parse_table_json_ts(
+    response_stream: AsyncGenerator[str, None], row_struct: BaseModel
+) -> AsyncGenerator[dict, None]:
+
+    results = {}
+    buffer = ""
+
+    JSON_LANG = Language(ts_json.language())
+    parser = Parser(JSON_LANG)
+
+    async for chunk in response_stream:
+        buffer = buffer + chunk
+        buffer_closed = buffer + '"'
+        results = await query_table_json_struct(
+            buffer_closed.encode("utf8"), row_struct, parser, JSON_LANG
+        )
+        yield results
