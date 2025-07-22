@@ -9,8 +9,11 @@ readme = "readme.md"
 requires-python = ">= 3.8"
 dependencies = [
     "pydantic",
-    "Jinja2"
+    "Jinja2",
+    "tree-sitter",
+    "tree-sitter-json"
 ]
+
 dynamic = [
   "version"
 ]

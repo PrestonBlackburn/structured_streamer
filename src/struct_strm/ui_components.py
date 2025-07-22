@@ -11,7 +11,11 @@ from struct_strm.structs.form_structs import (
     DefaultFormItem,
 )
 from struct_strm.template import template
-from struct_strm.partial_parser import parse_list_json, parse_form_json_fsm
+from struct_strm.partial_parser import (
+    parse_list_json,
+    parse_form_json_fsm,
+    parse_form_json_ts,
+)
 from pydantic import BaseModel
 
 import logging
@@ -136,7 +140,7 @@ class FormComponent(AbstractComponent):
         ]  # should only have one item key
         field_description_key = get_struct_keys(FormFieldType)[1]
 
-        form_items_response: AsyncGenerator = parse_form_json_fsm(
+        form_items_response: AsyncGenerator = parse_form_json_ts(
             response_stream,
             start_key=start_key,
             field_name_key=field_name_key,

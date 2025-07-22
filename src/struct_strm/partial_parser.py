@@ -1,3 +1,6 @@
+import tree_sitter_json as ts_json
+from tree_sitter import Language, Parser, Query, QueryCursor
+
 from typing import AsyncGenerator, List, Dict, Tuple, Optional, Type, Union
 import enum
 from copy import deepcopy
@@ -291,3 +294,87 @@ async def parse_form_json_fsm(
         if next_state and next_state != state:
             state = next_state
         yield deepcopy(state.results)
+
+
+# ------------------------------------------------------------
+# -------------------  Is this a tree sitter -----------------
+# ------------------------------------------------------------
+
+
+async def query_form_json_struct(
+    snapshot: bytes,
+    field_name_key: str,
+    field_description_key: str,
+    parser: Parser,
+    lang: Language,
+) -> dict[int, dict[str, str]]:
+    # I feel like there is some way to generalize this...
+    query_string = """
+    (pair
+        key: (string) @key
+        value: (string) @value) @pair
+    """
+
+    result_placeholder = {field_name_key: "", field_description_key: ""}
+    query_results = {}
+    tree = parser.parse(snapshot)
+    query = Query(lang, query_string)
+    # captures = QueryCursor(query).captures(tree.root_node)
+    matches = QueryCursor(query).matches(tree.root_node)
+    pair_count = -1
+    for idx, capture_dict in matches:
+        key_nodes = capture_dict.get("key")
+        value_nodes = capture_dict.get("value")
+        if key_nodes is None or value_nodes is None:
+            continue
+        key_node = key_nodes[0]
+        value_node = value_nodes[0]
+        # ex: field_name or field_placeholder
+        pair_key = (
+            snapshot[key_node.start_byte : key_node.end_byte].decode("utf8").strip('"')
+        )
+        # ex: "fruits" or "apple banana..."
+        pair_value = (
+            snapshot[value_node.start_byte : value_node.end_byte]
+            .decode("utf8")
+            .strip('"')
+        )
+        if pair_key == field_name_key:
+            pair_count += 1
+            query_results.update({pair_count: result_placeholder.copy()})
+        if pair_count >= 0 and pair_count in query_results:
+            query_results[pair_count].update({pair_key: pair_value})
+    return query_results
+
+
+async def parse_form_json_ts(
+    response_stream: AsyncGenerator[str, None],
+    start_key: str = "form_fields",
+    field_name_key: str = "field_name",
+    field_description_key: str = "field_placeholder",
+) -> AsyncGenerator[dict, None]:
+    results = {}
+    buffer = ""
+
+    JSON_LANG = Language(ts_json.language())
+    parser = Parser(JSON_LANG)
+
+    async for chunk in response_stream:
+        buffer = buffer + chunk
+        buffer_closed = buffer + '"'
+        results = await query_form_json_struct(
+            buffer_closed.encode("utf8"),
+            field_name_key,
+            field_description_key,
+            parser,
+            JSON_LANG,
+        )
+        yield results
+
+
+# ----------------- Table Rendering -------------------
+# Example structure (kind of like generic version of last example)
+# [
+#   { "title": "Top Gun", "genre": "Action", "rating": 8.3 },
+#   { "title": "Amélie", "genre": "Romance", "rating": 8.4 }
+# ]
