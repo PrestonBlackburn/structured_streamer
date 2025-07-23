@@ -1,0 +1,26 @@
+<div class="w-full max-w-4xl mx-auto">
+    <div class="overflow-x-auto shadow rounded-lg border border-gray-200">
+        <table class="min-w-full bg-white divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+                <tr>
+                    {% for key, value in table[0].items() %}
+                        <th scope="col" class="px-6 py-3 text-left text-sm font-medium text-gray-600">
+                            {{ key }}
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody id="table-body" class="divide-y divide-gray-100">
+                {% for row in table %}
+                    <tr>
+                        {% for key, value in row.items() %}
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                {{ value }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

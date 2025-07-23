@@ -5,12 +5,13 @@ from pydantic import BaseModel
 from struct_strm.llm_wrappers import openai_stream_wrapper
 from struct_strm.structs.list_structs import DefaultListItem, DefaultListStruct
 
-from struct_strm.ui_components import ListComponent, FormComponent
+from struct_strm.ui_components import ListComponent, FormComponent, TableComponent
 from struct_strm.structs.list_structs import simulate_stream_list_struct
 from struct_strm.structs.form_structs import (
     simulate_stream_form_struct,
     simulate_stream_form_openai,
 )
+from struct_strm.structs.table_structs import simulate_stream_table_struct
 
 from fastapi import FastAPI, Request, status
 from fastapi.responses import StreamingResponse, HTMLResponse
@@ -223,6 +224,52 @@ async def test_list():
 
     component = FormComponent()
     stream: AsyncGenerator = simulate_stream_form_struct(interval_sec=0.02)
+    html_component_stream: AsyncGenerator = component.render(response_stream=stream)
+
+    async def wrapper():
+        async for item in html_component_stream:
+            print(item)
+            yield item
+        yield {"event": "streamCompleted", "data": ""}
+
+    return EventSourceResponse(wrapper(), media_type="text/event-stream")
+    # return  StreamingResponse(html_component_stream, media_type="text/html")
+
+# ----------------------------------------------------
+# -------------------- Test Table --------------------
+# ----------------------------------------------------
+
+
+
+@app.get("/get_table_stream")
+def test_fetch_form_sse():
+    # kick off SSE stream
+    sse_container = "sse-table"
+    stream_target = "stream-table"
+    component_path = "/test_table"
+    sse_html = f"""<div 
+         id="sse-table-container"
+         hx-ext="sse"
+         sse-connect="{component_path}">
+            <div 
+                sse-swap="message" 
+                hx-target="#{stream_target}" 
+                hx-swap="innerHTML">
+            </div>
+            <div
+                sse-swap="streamCompleted" 
+                hx-target="#{sse_container}">
+            </div>
+        </div>
+    """
+    return HTMLResponse(content=sse_html, media_type="text/html")
+
+
+@app.get("/test_table")
+async def test_list():
+
+    component = TableComponent()
+    stream: AsyncGenerator = simulate_stream_table_struct(interval_sec=0.02)
     html_component_stream: AsyncGenerator = component.render(response_stream=stream)
 
     async def wrapper():
