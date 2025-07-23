@@ -452,4 +452,6 @@ async def parse_table_json_ts(
         results = await query_table_json_struct(
             buffer_closed.encode("utf8"), row_struct, parser, JSON_LANG
         )
+        if results == {}:
+            continue
         yield results

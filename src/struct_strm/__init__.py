@@ -1,6 +1,7 @@
 __all__ = [
     "ListComponent",
     "FormComponent",
+    "TableComponent",
     "parse_list_json",
     "parse_form_json_fsm",
     "parse_form_json_ts",
@@ -21,7 +22,12 @@ from struct_strm.partial_parser import (
     parse_table_json_ts,
 )
 
-from struct_strm.ui_components import ListComponent, FormComponent
+from struct_strm.ui_components import (
+    ListComponent, 
+    FormComponent,
+    TableComponent,
+)
+
 from struct_strm.llm_clients import aget_openai_client
 from struct_strm.llm_wrappers import openai_stream_wrapper
 
