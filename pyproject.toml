@@ -10,7 +10,7 @@ requires-python = ">= 3.8"
 dependencies = [
     "pydantic",
     "Jinja2",
-    "tree-sitter",
+    "tree-sitter>=0.25",
     "tree-sitter-json"
 ]
 
