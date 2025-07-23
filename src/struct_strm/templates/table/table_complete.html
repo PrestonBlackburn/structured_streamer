@@ -1,0 +1,62 @@
+
+
+<div id="table-card" class="relative max-w-sm mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl m-4 bg-[linear-gradient(45deg,transparent_25%,rgba(246,230,59,.6)_50%,transparent_75%,transparent_100%)] bg-[length:250%_250%,100%_100%] bg-no-repeat">
+    <div class="p-8">
+        <div class="w-full max-w-4xl mx-auto">
+            <div class="overflow-x-auto shadow rounded-lg border border-gray-200">
+                <table class="min-w-full bg-white divide-y divide-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            {% for key, value in table[0].items() %}
+                                <th scope="col" class="px-6 py-3 text-left text-sm font-medium text-gray-600">
+                                    {{ key }}
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" class="divide-y divide-gray-100">
+                        {% for row in table %}
+                            <tr>
+                                {% for key, value in row.items() %}
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                        {{ value }}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+#table-card {
+    background-position: -100% 0, 0 0;
+    transition: background-position 1.5s ease-out;
+}
+#table-card.shine-effect {
+    background-position: 200% 0, 0 0;
+}
+</style>
+
+<script>
+function card_shine(elementId) {
+    const card = document.getElementById(elementId);
+    if (card) {
+        // Use a timeout to ensure the initial state is rendered before applying the animation class
+        setTimeout(function() {
+            card.classList.add('shine-effect');
+        }, 250);
+
+        // Optional: remove the class after animation to clean up
+        card.addEventListener('transitionend', () => {
+            card.classList.remove('shine-effect');
+            // To prevent re-triggering, we can also reset the transition property
+            card.style.transition = 'none';
+        }, { once: true });
+    }
+};
+card_shine('table-card');
+</script>

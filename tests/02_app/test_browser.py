@@ -33,3 +33,9 @@ def test_simple_form_stream(page: Page, get_page):
     page.locator("#test-stream-form-btn").click(timeout=2000)
     expect(page.locator("#form-card").first).to_be_visible(timeout=10000)
     expect(page.locator("label")).to_have_count(3, timeout=10000)
+
+
+def test_simple_table_stream(page: Page, get_page):
+    page.locator("#test-stream-table-btn").click(timeout=2000)
+    expect(page.locator("#table-card").first).to_be_visible(timeout=10000)
+    expect(page.locator("tr")).to_have_count(3, timeout=10000)

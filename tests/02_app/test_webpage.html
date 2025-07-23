@@ -94,6 +94,24 @@
         <div id="stream-form"></div>
         <!-- END -Testing Basic  Form SSE HTMX -->
 
+
+        <!-- Testing Basic Table SSE HTMX -->
+        <div> Test Mock Table Stream HTMX </div>
+        <button 
+                id="test-stream-table-btn" 
+                hx-get="/get_table_stream"
+                hx-swap="innerHTML"
+                hx-target="#sse-table"
+                class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
+            >
+            Test 
+        </button>
+
+        <div id="sse-table"></div>
+        <div id="stream-table"></div>
+        <!-- END -Testing Basic Table SSE HTMX -->
+
+
     </div>
 
 </body>
