@@ -29,4 +29,5 @@ jobs:
         run: | 
           pip install .[dev]
           playwright install
+          playwright install-deps
           pytest 
