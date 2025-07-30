@@ -16,11 +16,7 @@ from struct_strm.structs.table_structs import (
 )
 from struct_strm.template import template
 from struct_strm.partial_parser import (
-    parse_list_json,
-    parse_form_json_fsm,
-    parse_form_json_ts,
-    get_struct_keys,
-    parse_table_json_ts,
+    tree_sitter_parse,
 )
 from pydantic import BaseModel
 
@@ -81,17 +77,13 @@ class ListComponent(AbstractComponent):
         # parse the string stream into objects that make sense
         partial_template = template("list/list_partial.html")
         template_wrapper = template("list/list_container.html")
-        # example format (as json string):
-        # """{"items": [{"item": "apple orange"}, {"item": "banana kiwi grape"}, {"item": "mango pineapple"}]}"""
-        # basically just pull out "item" from the items list as they come
-        start_key = get_struct_keys(ListType)[0]  # should only have one key
-        item_key = get_struct_keys(ItemType)[0]  # should only have one item key
-        items_list: AsyncGenerator = parse_list_json(
-            response_stream, start_key=start_key, item_key=item_key
+
+        list_struct: AsyncGenerator = tree_sitter_parse(
+            DefaultListStruct, response_stream, 
         )
-        async for streamed_items in items_list:
-            self.items = streamed_items
-            patial_template_html = partial_template.render(items=list(streamed_items))
+        async for streamed_items in list_struct:
+            self.items = [streamed_item.item for streamed_item in streamed_items.items]
+            patial_template_html = partial_template.render(items=self.items)
             yield template_wrapper.render(list_content=patial_template_html)
 
     async def complete_render(self, **kwargs) -> AsyncGenerator[str, None]:
@@ -135,22 +127,14 @@ class FormComponent(AbstractComponent):
         partial_template = template("form/form_partial.html")
         template_wrapper = template("form/form_container.html")
 
-        # should probably be user input...
-        start_key = get_struct_keys(FormType)[0]  # should only have one key
-        field_name_key = get_struct_keys(FormFieldType)[
-            0
-        ]  # should only have one item key
-        field_description_key = get_struct_keys(FormFieldType)[1]
-
-        form_items_response: AsyncGenerator = parse_form_json_ts(
+        form_items_response: AsyncGenerator = tree_sitter_parse(
+            DefaultFormStruct,
             response_stream,
-            start_key=start_key,
-            field_name_key=field_name_key,
-            field_description_key=field_description_key,
         )
 
         async for streamed_items in form_items_response:
-            streamed_list = [streamed_items[i] for i in sorted(streamed_items.keys())]
+            items = streamed_items.form_fields
+            streamed_list = [i.model_dump() for i in items]
             self.form = streamed_list
             patial_template_html = partial_template.render(form=list(streamed_list))
             yield template_wrapper.render(form_content=patial_template_html)
@@ -197,14 +181,21 @@ class TableComponent(AbstractComponent):
         partial_template = template("table/table_partial.html")
         template_wrapper = template("table/table_container.html")
 
-        form_items_response: AsyncGenerator = parse_table_json_ts(
+        table_items_response: AsyncGenerator = tree_sitter_parse(
+            ExampleTableStruct,
             response_stream,
-            row_struct = RowType
         )
+        async for streamed_items in table_items_response:
 
-        async for streamed_items in form_items_response:
-            streamed_list = [streamed_items[i] for i in sorted(streamed_items.keys())]
+            items = streamed_items.table
+            streamed_list = [i.model_dump() for i in items]
             self.table = streamed_list
+            # list can be blank
+            if streamed_list == []:
+                async for item in self.placeholder_render(**kwargs):
+                    yield item
+                    await asyncio.sleep(0.25)
+                continue
             patial_template_html = partial_template.render(table=list(streamed_list))
             yield template_wrapper.render(table_content=patial_template_html)
 
