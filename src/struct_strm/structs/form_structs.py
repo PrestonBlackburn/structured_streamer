@@ -5,13 +5,13 @@ from pydantic import BaseModel
 
 
 class DefaultFormItem(BaseModel):
-    field_name: str
-    field_placeholder: str
+    field_name: str = ""
+    field_placeholder: str = ""
 
 
 class DefaultFormStruct(BaseModel):
     # mostly just for testing
-    form_fields: List[DefaultFormItem]
+    form_fields: List[DefaultFormItem] = []
     # ex: form_fields=[{"field_name": "fruits", "field_placeholder": "apple orange"}, {"field_name": "appliance"}, {"item3": "mango pineapple"}]
 
 
@@ -42,7 +42,6 @@ async def simulate_stream_form_struct(
     for item in stream_response:
         item = item.replace("&", "")
         await asyncio.sleep(interval_sec)
-        print(item)
         yield item
 
 
@@ -59,7 +58,7 @@ async def simulate_stream_form_openai(
         '":"',
         "fruits",
         '"',
-        ', ',
+        ", ",
         '"',
         "field_placeholder",
         '":"',
@@ -67,20 +66,20 @@ async def simulate_stream_form_openai(
         " orange",
         " straw",
         "berry",
-        '."',
+        '"',
         '},{"',
         "field_name",
         '":"',
         "appliance",
         '"',
-        ', ',
+        ", ",
         '"',
         "field_placeholder",
         '":"',
         "blender",
         " mixer",
         " toaster",
-        '."',
+        '"',
         "}",
         "]}",
     ]

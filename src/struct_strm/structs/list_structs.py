@@ -2,16 +2,22 @@ import asyncio
 import time
 from typing import List, AsyncGenerator
 from pydantic import BaseModel
+from dataclasses import dataclass, field
 
 
 class DefaultListItem(BaseModel):
-    item: str
+    item: str = ""
 
 
 class DefaultListStruct(BaseModel):
     # mostly just for testing
-    items: List[DefaultListItem]
+    items: list[DefaultListItem] = []
     # ex: itesms=[{"item": "apple orange"}, {"item2": "banana kiwi grape"}, {"item3": "mango pineapple"}]
+
+
+@dataclass
+class DefaultListDataclass:
+    items: list[DefaultListItem] = field(default_factory=lambda: [])
 
 
 async def simulate_stream_list_struct(
@@ -37,7 +43,6 @@ async def simulate_stream_list_struct(
     for item in stream_response:
         item = item.replace("&", "")
         await asyncio.sleep(interval_sec)
-        print(item)
         yield item
 
 
@@ -48,7 +53,7 @@ async def simulate_stream_openai(
         " ",
         '{"',
         "items",
-        '":["',
+        '":[',
         '{"',
         "item",
         '":"',
