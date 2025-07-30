@@ -5,14 +5,14 @@ from pydantic import BaseModel
 
 
 class ExampleRow(BaseModel):
-    title: str
-    genre: str
-    rating: str
+    title: str = ""
+    genre: str = ""
+    rating: str = ""
 
 
 class ExampleTableStruct(BaseModel):
     # mostly just for testing
-    table: List[ExampleRow]
+    table: List[ExampleRow] = []
     # ex: table =  [
     #     {"title": "Akira", "genre": "action, cyberpunk, horror", "rating": "5"},
     #     {"title": "2001: A Space Odyssey", "genre": "Sci-fi, Suspense", "rating": "5"},
@@ -45,7 +45,6 @@ async def simulate_stream_table_struct(
     for item in stream_response:
         item = item.replace("&", "")
         await asyncio.sleep(interval_sec)
-        print(item)
         yield item
 
 
