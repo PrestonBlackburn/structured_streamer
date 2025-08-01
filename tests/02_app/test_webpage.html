@@ -112,6 +112,25 @@
         <!-- END -Testing Basic Table SSE HTMX -->
 
 
+        <!-- Testing Basic Rubric SSE HTMX -->
+        <div> Test Mock Rubric Outline Stream HTMX </div>
+        <button
+                id="test-stream-rubric-btn"
+                hx-get="/get_rubric_stream"
+                hx-swap="innerHTML"
+                hx-target="#sse-rubric"
+                class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
+            >
+            Test 
+        </button>
+
+        <div id="sse-rubric"></div>
+        <div id="stream-rubric"></div>
+        <!-- END -Testing Basic Rubric SSE HTMX -->
+
+
+
+        
     </div>
 
 </body>
