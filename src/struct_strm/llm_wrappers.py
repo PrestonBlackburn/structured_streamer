@@ -2,13 +2,14 @@ from struct_strm.llm_clients import aget_openai_client
 from typing import List, Union, Callable, AsyncGenerator, Dict, Type
 from openai.types.chat import ParsedChatCompletion
 from dataclasses import field
+from struct_strm.partial_parser import tree_sitter_parse
 
 # List example with openai
 import logging
 
 _logger = logging.getLogger(__name__)
 
-
+# I think this is too high level, the user should be able to use the openai client like normal...
 async def openai_stream_wrapper(
     user_query: str,
     prompt_context: str,
@@ -35,6 +36,26 @@ async def openai_stream_wrapper(
                 delta = event.delta
                 _logger.debug(f"Delta: {delta}")  # get tokens for better mocks
                 yield delta
+            elif event.type == "content.done":
+                _logger.info("OpenAI stream complete")
+                pass
+            elif event.type == "error":
+                _logger.error(f"Error in stream: {event.error}")
+
+# maybe implement something more like this later (need to test out)
+async def parse_openai_stream(
+    response_stream: AsyncGenerator,
+    ResponseFormat: Type,
+) -> AsyncGenerator:
+    """
+    Parse the OpenAI stream and yield structured responses.
+    """
+    async with response_stream as stream:
+        async for event in stream:
+            if event.type == "content.delta":
+                delta = event.delta
+                _logger.debug(f"Delta: {delta}")  # get tokens for better mocks
+                yield tree_sitter_parse(ResponseFormat, delta)
             elif event.type == "content.done":
                 _logger.info("OpenAI stream complete")
                 pass

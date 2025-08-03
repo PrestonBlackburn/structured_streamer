@@ -6,6 +6,7 @@ extra_css:
 nav:
   - About: index.md
   - Getting Started: getting_started.md
+  - Features: parsing_streams.md
 
 plugins: 
   - techdocs-core

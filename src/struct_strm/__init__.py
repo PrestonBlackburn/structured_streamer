@@ -2,6 +2,7 @@ __all__ = [
     "ListComponent",
     "FormComponent",
     "TableComponent",
+    "RubricComponent",
     
     "tree_sitter_parse",
 
@@ -22,6 +23,7 @@ from struct_strm.ui_components import (
     ListComponent, 
     FormComponent,
     TableComponent,
+    RubricComponent,
 )
 
 from struct_strm.llm_clients import aget_openai_client
