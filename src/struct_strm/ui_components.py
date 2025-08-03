@@ -14,10 +14,7 @@ from struct_strm.structs.table_structs import (
     ExampleRow,
     ExampleTableStruct,
 )
-from struct_strm.structs.rubric_structs import (
-    DefaultOutlineRubric,
-    DefaultRubric
-)
+from struct_strm.structs.rubric_structs import DefaultOutlineRubric, DefaultRubric
 from struct_strm.template import template
 from struct_strm.partial_parser import (
     tree_sitter_parse,
@@ -83,7 +80,8 @@ class ListComponent(AbstractComponent):
         template_wrapper = template("list/list_container.html")
 
         list_struct: AsyncGenerator = tree_sitter_parse(
-            DefaultListStruct, response_stream, 
+            DefaultListStruct,
+            response_stream,
         )
         async for streamed_items in list_struct:
             self.items = [streamed_item.item for streamed_item in streamed_items.items]
@@ -174,7 +172,6 @@ class TableComponent(AbstractComponent):
         component_html = placeholder_template.render()
         yield template_wrapper.render(table_content=component_html)
 
-    
     async def partial_render(
         self,
         response_stream: AsyncGenerator[str, None],
@@ -258,7 +255,7 @@ class RubricComponent(AbstractComponent):
                 # if there are no keys, we can just return the placeholder
                 async for item in self.placeholder_render(**kwargs):
                     yield item
-                    await asyncio.sleep(0.5)
+                    await asyncio.sleep(0.0001)
                 continue
 
             # we want blank cells for the inner categories
@@ -269,13 +266,13 @@ class RubricComponent(AbstractComponent):
                 # to create the rows, num keys -1
                 crit.criteria_value
                 rows.append(([crit.criteria_value] + [""] * (num_keys - 1)))
-            
+
             self.rubric_rows_outlined = rows
             self.rubric_keys = keys
             patial_template_html = partial_template.render(keys=keys, rows=rows)
             yield template_wrapper.render(rubric_content=patial_template_html)
 
-    async def partial_render_step_2(        
+    async def partial_render_step_2(
         self,
         secondary_response_stream: AsyncGenerator[str, None],
         RubricType=DefaultRubric,
@@ -292,27 +289,33 @@ class RubricComponent(AbstractComponent):
         )
 
         # init the baseline struct
-        keys = {key: i  for i, key in enumerate(self.rubric_keys)}
+        keys = {key: i for i, key in enumerate(self.rubric_keys)}
         table_content_grid = {}
 
         # split out row values by index
         for criteria_idx, criteria in enumerate(self.rubric_criteria):
-            row_content_by_idx = {i: value for i, value in enumerate(self.rubric_rows_outlined[criteria_idx]) }
+            row_content_by_idx = {
+                i: value
+                for i, value in enumerate(self.rubric_rows_outlined[criteria_idx])
+            }
             row = {criteria.criteria_value: row_content_by_idx}
             table_content_grid.update(row)
 
         async for rubric in rubric_cell_response:
             cells = rubric.cells
             for cell in cells:
-                print(f"Got Cell: {cell}")
-                print(f"Match With: {table_content_grid}")
-                
-                print(cell.category, cell.criteria)
-                print(f"Keys: {self.rubric_keys}")
-               
-                criterias = [ item.criteria_value for item in self.rubric_criteria]
-                print(f"Criterias: {criterias}")
-                if cell.category not in self.rubric_keys or cell.criteria not in criterias:
+                _logger.debug(f"Got Cell: {cell}")
+                _logger.debug(f"Match With: {table_content_grid}")
+
+                _logger.debug(cell.category, cell.criteria)
+                _logger.debug(f"Keys: {self.rubric_keys}")
+
+                criterias = [item.criteria_value for item in self.rubric_criteria]
+                _logger.debug(f"Criterias: {criterias}")
+                if (
+                    cell.category not in self.rubric_keys
+                    or cell.criteria not in criterias
+                ):
                     continue
 
                 row_key = keys[cell.category]
@@ -320,39 +323,49 @@ class RubricComponent(AbstractComponent):
 
                 table_content_grid_rows = []
                 for row_content in table_content_grid.values():
-                    table_content_grid_rows.append((value for _, value in row_content.items()))
+                    table_content_grid_rows.append(
+                        (value for _, value in row_content.items())
+                    )
 
-                self.rubric_rows_populated = [ list(row) for row in table_content_grid_rows]
-                print(f"Table content grid rows: {self.rubric_rows_populated}")
-                patial_template_html = partial_template.render(keys=self.rubric_keys, rows=self.rubric_rows_populated)
+                self.rubric_rows_populated = [
+                    list(row) for row in table_content_grid_rows
+                ]
+                _logger.debug(f"Table content grid rows: {self.rubric_rows_populated}")
+                patial_template_html = partial_template.render(
+                    keys=self.rubric_keys, rows=self.rubric_rows_populated
+                )
                 yield template_wrapper.render(rubric_content=patial_template_html)
-
 
     async def complete_render(self, **kwargs) -> AsyncGenerator[str, None]:
         # render complete component with processssing
 
-        print(f"Using complete rows: {self.rubric_rows_populated}")
+        _logger.debug(f"Using complete rows: {self.rubric_rows_populated}")
         complete_template = template("rubric/rubric_complete.html")
-        yield complete_template.render(keys=self.rubric_keys, rows=self.rubric_rows_populated)
+        yield complete_template.render(
+            keys=self.rubric_keys, rows=self.rubric_rows_populated
+        )
 
     async def render(
-        self, 
+        self,
         response_stream: AsyncGenerator[str, None],
         secondary_response_stream: AsyncGenerator[str, None],
-        **kwargs
+        **kwargs,
     ) -> AsyncGenerator[str, None]:
         # render the component in 3 stages
 
         async for item in self.placeholder_render(**kwargs):
             yield item
-            await asyncio.sleep(0.25)
-        async for item in self.partial_render(response_stream, RubricType=DefaultOutlineRubric, **kwargs):
+            await asyncio.sleep(0.0001)
+        async for item in self.partial_render(
+            response_stream, RubricType=DefaultOutlineRubric, **kwargs
+        ):
             yield item
-            await asyncio.sleep(0.05)
+            await asyncio.sleep(0.0001)
         # need to preserve order from the first render
-        async for item in self.partial_render_step_2(secondary_response_stream, RubricType=DefaultRubric, **kwargs):
+        async for item in self.partial_render_step_2(
+            secondary_response_stream, RubricType=DefaultRubric, **kwargs
+        ):
             yield item
-            await asyncio.sleep(0.05)
+            await asyncio.sleep(0.0001)
         async for item in self.complete_render(**kwargs):
             yield item
-

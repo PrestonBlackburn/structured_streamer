@@ -9,4 +9,4 @@ GEMINI.md
 .coverage
 coverage.xml
 dist/**
-
+/tests/profile/*.html
