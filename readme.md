@@ -22,9 +22,14 @@ JSON format is the standard when dealing with structured responses from LLMs. In
 
 You can learn more about constrained decoding and context free grammar here: [XGrammar - Achieving Efficient, Flexible, and Portable Structured Generation with XGrammar](https://blog.mlc.ai/2024/11/22/achieving-efficient-flexible-portable-structured-generation-with-xgrammar)   
 
+
+### Installation
+
+```bash
+pip install struct-strm
+```
+
 <br/>
-
-
 
 ## Main Features
 
@@ -35,7 +40,7 @@ The library also provides simple HTML templates that serve as examples of how yo
 Due to the nature of partial json streaming, there can be "wrong" ways to stream responses that are not effective for partial rendering of responeses in the UI. The library also provides examples of tested ways to apply the library to get good results.   
 
 **High Level Flow**  
-![High level flow](docs/img/high_level_flow.png)
+![High level flow](https://raw.githubusercontent.com/PrestonBlackburn/structured_streamer/refs/heads/main/docs/img/high_level_flow.png)
 
 
 
@@ -43,46 +48,53 @@ Due to the nature of partial json streaming, there can be "wrong" ways to stream
 This is an example of a form component being incrementally rendered. By using a structured query response from an LLM, in this case a form with form field names and field placeholders, we can stream the form results directly to a HTML component. This drastically reduces the time to first token, and the precieved time that a user needs to wait. More advanced components are under development. 
 
 ```python
+from stuct_strm import parse_openai
+from pydantic import BaseModel
+from openai import AsyncOpenAI
+
+...
 
 class DefaultFormItem(BaseModel):
-    field_name: str
-    field_placeholder: str
+    field_name: str = ""
+    field_placeholder: str = ""
 
 class DefaultFormStruct(BaseModel):
-    form_fields: List[DefaultFormItem]
+    form_fields: List[DefaultFormItem] = []
 
-# a typical openai structured response stream may look like: 
-...
-async with client.beta.chat.completions.stream(
+
+stream_response = client.beta.chat.completions.stream(
     model="gpt-4.1",
     messages=messages,
     response_format=DefaultFormStruct,
     temperature=0.0,
-) as stream:
-    async for event in stream:
-        ...
-# where the resulting stream is used to incrementally build the component
-# (shown below)
+) 
+
+form_struct_response = parse_openai(DefaultFormStruct, stream_response)
+async for instance in form_struct_response:
+    print(instance)
 ```
 
-![Example Form Streaming](docs/img/form_struct_strm.gif)
-
-## Contributing
-
-### Test
+Fully formed python classes are returned:
 ```bash
-pytest
+>>>  DefaultFormStruct(form_fields=[DefaultFormItem(field_name="fruits", field_placeholder="")])
+>>>  DefaultFormStruct(form_fields=[DefaultFormItem(field_name="fruits", field_placeholder="apple ")])
+>>>  DefaultFormStruct(form_fields=[DefaultFormItem(field_name="fruits", field_placeholder="apple orange strawberry")])
+>>>  etc....
 ```
 
-### Format
-```bash
-python -m black ./
+And the corresponding incomplete json string streams would have looked like:
+```txt
+>>> "{"form_fields": [{"field_name": "fruits"
+>>> "{"form_fields": [{"field_name": "fruits", "field_placeholder": "apple "
+>>> "{"form_fields": [{"field_name": "fruits", "field_placeholder": "apple orange strawberry"}
+>>> etc...
 ```
 
-### Docs
-```bash
-mkdocs serve
-```
+### Component Streaming
+The structured responses can then be easily used to generate incrementally rendered web components. For exmaple:  
+
+![Example Form Streaming](https://raw.githubusercontent.com/PrestonBlackburn/structured_streamer/refs/heads/main/docs/img/form_struct_strm.gif)
+
 
 ## Other
 

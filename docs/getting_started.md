@@ -1,5 +1,9 @@
 # Installation
-TBD
+
+Install With Pypi:
+```bash
+pip install struct-strm
+```
 
 # Usage
 
@@ -12,6 +16,13 @@ from struct_strm.structs.list_structs import DefaultListStruct
 # The query and context for the LLM call
 prompt_context = ""
 user_query = "Create list describing 5 open source llm tools"
+
+class DefaultListItem(BaseModel):
+    item: str = ""
+
+class DefaultListStruct(BaseModel):
+    # mostly just for testing
+    items: list[DefaultListItem] = []
 
 # We can return the json stream from openai
 # *support for more llms in the future
@@ -41,23 +52,19 @@ asyncio.run(test_list_parse(stream))
 As we loop through the items in the async for loop:  
 
 ```markdown
->>> ["Hugg"]
->>> ["Hugging"]
->>> ["Hugging Face"]
->>> ["Hugging Face Trans"]
->>> ["Hugging Face Transformers"]
->>> ["Hugging Face Transformers:"]
+>>> DefaultListStruct(items=[DefaultListItem(item="Hugg")])
+>>> DefaultListStruct(items=[DefaultListItem(item="Hugging")])
+>>> DefaultListStruct(items=[DefaultListItem(item="Hugging Face")])
+>>> DefaultListStruct(items=[DefaultListItem(item="Hugging Face Trans")])
+>>> DefaultListStruct(items=[DefaultListItem(item="Hugging Face Transformers")])
+>>> DefaultListStruct(items=[DefaultListItem(item="Hugging Face Transformers:")])
 >>> etc...
->>> ["Hugging Face Transformers: A popular open-source library etc...."]
->>> ["Hugging Face Transformers: A popular open-source library etc....", "Llama"]
->>> ["Hugging Face Transformers: A popular open-source library etc....", "Llama."]
->>> ["Hugging Face Transformers: A popular open-source library etc....", "Llama.cpp"]
->>> ["Hugging Face Transformers: A popular open-source library etc....", "Llama.cpp:"]
->>> ["Hugging Face Transformers: A popular open-source library etc....", "Llama.cpp: A"]
->>> ["Hugging Face Transformers: A popular open-source library etc....", "Llama.cpp: A C"]
->>> ["Hugging Face Transformers: A popular open-source library etc....", "Llama.cpp: A C+"]
->>> ["Hugging Face Transformers: A popular open-source library etc....", "Llama.cpp: A C++"]
->>> ["Hugging Face Transformers: A popular open-source library etc....", "Llama.cpp: A C++ implementation"]
+>>> DefaultListStruct(items=[DefaultListItem(item="Hugging Face Transformers: A popular open-source library etc....")])
+>>> DefaultListStruct(items=[DefaultListItem(item="Hugging Face Transformers: A popular open-source library etc...."), DefaultListItem(item="Llama")])
+>>> DefaultListStruct(items=[DefaultListItem(item="Hugging Face Transformers: A popular open-source library etc...."), DefaultListItem(item="Llama.")])
+>>> DefaultListStruct(items=[DefaultListItem(item="Hugging Face Transformers: A popular open-source library etc...."), DefaultListItem(item="Llama.cpp")])
+>>> DefaultListStruct(items=[DefaultListItem(item="Hugging Face Transformers: A popular open-source library etc...."), DefaultListItem(item="Llama.cpp:")])
+>>> DefaultListStruct(items=[DefaultListItem(item="Hugging Face Transformers: A popular open-source library etc...."), DefaultListItem(item="Llama.cpp: A")])
 >>> etc...
 ```
 

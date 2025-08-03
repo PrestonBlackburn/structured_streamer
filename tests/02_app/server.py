@@ -5,12 +5,20 @@ from pydantic import BaseModel
 from struct_strm.llm_wrappers import openai_stream_wrapper
 from struct_strm.structs.list_structs import DefaultListItem, DefaultListStruct
 
-from struct_strm.ui_components import ListComponent, FormComponent, TableComponent
+from struct_strm.ui_components import (
+    ListComponent,
+    FormComponent, 
+    TableComponent,
+    RubricComponent,
+)
+
 from struct_strm.structs.list_structs import simulate_stream_list_struct
 from struct_strm.structs.form_structs import (
     simulate_stream_form_struct,
     simulate_stream_form_openai,
 )
+
+from struct_strm.structs.rubric_structs import simulate_stream_rubric_outline_struct, simulate_stream_rubric_final_struct
 from struct_strm.structs.table_structs import simulate_stream_table_struct
 
 from fastapi import FastAPI, Request, status
@@ -136,7 +144,7 @@ async def test_list():
 
 
 # ---------------------------------------------------
-# ------------ Test With OpenAI Integration -------------
+# ------------ Test With OpenAI Integration ---------
 # ---------------------------------------------------
 
 
@@ -271,6 +279,52 @@ async def test_list():
     component = TableComponent()
     stream: AsyncGenerator = simulate_stream_table_struct(interval_sec=0.02)
     html_component_stream: AsyncGenerator = component.render(response_stream=stream)
+
+    async def wrapper():
+        async for item in html_component_stream:
+            print(item)
+            yield item
+        yield {"event": "streamCompleted", "data": ""}
+
+    return EventSourceResponse(wrapper(), media_type="text/event-stream")
+    # return  StreamingResponse(html_component_stream, media_type="text/html")
+
+
+
+# ----------------------------------------------------
+# ------------------- Test Rubric --------------------
+# ----------------------------------------------------
+
+@app.get("/get_rubric_stream")
+def test_fetch_rubric_sse():
+    # kick off SSE stream
+    sse_container = "sse-rubric"
+    stream_target = "stream-rubric"
+    component_path = "/test_rubric"
+    sse_html = f"""<div 
+         id="sse-rubric-container"
+         hx-ext="sse"
+         sse-connect="{component_path}">
+            <div 
+                sse-swap="message" 
+                hx-target="#{stream_target}" 
+                hx-swap="innerHTML">
+            </div>
+            <div
+                sse-swap="streamCompleted" 
+                hx-target="#{sse_container}">
+            </div>
+        </div>
+    """
+    return HTMLResponse(content=sse_html, media_type="text/html")
+
+@app.get("/test_rubric")
+async def test_rubric():
+    
+    component = RubricComponent()
+    stream: AsyncGenerator = simulate_stream_rubric_outline_struct(interval_sec=0.02)
+    chained_stream: AsyncGenerator = simulate_stream_rubric_final_struct(interval_sec=0.00002)
+    html_component_stream: AsyncGenerator = component.render(stream, chained_stream)
 
     async def wrapper():
         async for item in html_component_stream:
