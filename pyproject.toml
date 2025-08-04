@@ -79,6 +79,11 @@ docs = [
     "mkdocs-techdocs-core"
 ]
 
+benchmark = [
+  "matplotlib",
+  "pandas"
+]
+
 [tool.hatch.envs.test]
 dependencies = [
     "black",

@@ -8,6 +8,7 @@ __all__ = [
 
     "aget_openai_client",
     "openai_stream_wrapper",
+    "parse_openai_stream",
     # mock examples -
     "simulate_stream_list_struct",
     "simulate_stream_openai",
@@ -27,7 +28,7 @@ from struct_strm.ui_components import (
 )
 
 from struct_strm.llm_clients import aget_openai_client
-from struct_strm.llm_wrappers import openai_stream_wrapper
+from struct_strm.llm_wrappers import openai_stream_wrapper, parse_openai_stream
 
 from struct_strm.structs.list_structs import (
     simulate_stream_list_struct,

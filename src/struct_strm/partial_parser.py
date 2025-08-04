@@ -1,6 +1,7 @@
 import tree_sitter_json as ts_json
 from tree_sitter import Language, Parser, Query, QueryCursor
 from struct_strm.tree_queries import get_queries, get_str_keys
+from struct_strm.llm_response_handler import openai_chunk_handler, ContinueSignal
 from typing import AsyncGenerator, Any, Union
 import logging
 
@@ -166,8 +167,11 @@ async def query_tree_l2(
     return result_set
 
 
+
 async def tree_sitter_parse(
-    struct: type[Any], response_stream: AsyncGenerator[str, None]
+    struct: type[Any], 
+    response_stream: AsyncGenerator[str, None],
+    source:str = None
 ) -> AsyncGenerator[Union[type[Any], dict], None]:
     # return an instance of the struct for every response
     response = struct()
@@ -183,6 +187,15 @@ async def tree_sitter_parse(
     part_l2 = {}
 
     async for chunk in response_stream:
+        if source == "openai":
+            try:
+                chunk = await openai_chunk_handler(chunk)
+            except ContinueSignal:
+                continue
+            except Exception as e:
+                _logger.error(f"Error in openai_chunk_handler: {e}")
+                continue
+
         buffer = buffer + chunk
         buffer_closed = buffer + '"'
         if l1_query is not None:
