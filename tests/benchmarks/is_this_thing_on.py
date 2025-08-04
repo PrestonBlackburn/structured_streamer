@@ -6,19 +6,11 @@ from struct_strm import (
 )
 
 from  struct_strm.structs.list_structs import DefaultListStruct, DefaultListItem
-from typing import Type, AsyncGenerator
 
 # List example with openai
 import logging
 
 _logger = logging.getLogger(__name__)
-
-
-# async def simple_benchmark_struct_strm(n=10):
-
-
-# async def simple_benchmark_vanilla(n=10):
-
 
 async def static_list_benchmark(client, model, messages, TestStruct):
     # test values
@@ -37,14 +29,15 @@ async def static_list_benchmark(client, model, messages, TestStruct):
     time_first_token = time.time() - start
     time_first_meaningful_chunk = time.time() - start
     time_last_chunk = time.time() - start
-    # list_object_response = completion.choices[0].message
-
+    list_object_response = completion.choices[0].message.parsed
+    response_length = len(list_object_response.model_dump_json())
     print("--------- Static Test Results ------------")
+    print(f"Generated Response of Length: {response_length}")
     print(f"Time to first token: {time_first_token} seconds")
     print(f"Time to first meaningful chunk: {time_first_meaningful_chunk} seconds")
     print(f"Time to last chunk: {time_last_chunk} seconds")
 
-    return time_first_token, time_first_meaningful_chunk, time_last_chunk
+    return time_first_token, time_first_meaningful_chunk, time_last_chunk, response_length
 
 async def stream_list_benchmark(client, model, messages, TestStruct):
     # test values
@@ -53,7 +46,6 @@ async def stream_list_benchmark(client, model, messages, TestStruct):
     time_last_chunk = 0
 
     start = time.time()
-    # we need to strip out the initial "{'response': " json that gets returned
     stream =  client.beta.chat.completions.stream(
         model=model,
         messages=messages,
@@ -70,12 +62,14 @@ async def stream_list_benchmark(client, model, messages, TestStruct):
                 time_first_meaningful_chunk = time.time() - start
     time_last_chunk = time.time() - start
 
+    response_length = len(list_struct.model_dump_json())
     print("--------- Streamed Test Results ------------")
+    print(f"Generated Response of Length: {response_length}")
     print(f"Time to first token: {time_first_token} seconds")
     print(f"Time to first meaningful chunk: {time_first_meaningful_chunk} seconds")
     print(f"Time to last chunk: {time_last_chunk} seconds")
 
-    return time_first_token, time_first_meaningful_chunk, time_last_chunk
+    return time_first_token, time_first_meaningful_chunk, time_last_chunk, response_length
 
 async def list_benchmark(n:int=1, save:bool = True):
     # parameters
@@ -97,32 +91,32 @@ async def list_benchmark(n:int=1, save:bool = True):
     messages.append({"role": "user", "content": query})
 
 
-    results = [("ttft_stream", "ttfmc_stream", "ttlc_stream", "ttft_static", "ttfmc_static", "ttlc_static")]
+    results = [("ttft_static", "ttfmc_static", "ttlc_static", "ttft_stream", "ttfmc_stream", "ttlc_stream")]
+    response_lengths = [("static_response_length", "streamed_response_length")]
     for i in range(n):
-        ttft_static, ttfmc_static, ttlc_static = await static_list_benchmark(client, model, messages, TestStruct)
-        ttft_stream, ttfmc_stream, ttlc_stream = await stream_list_benchmark(client, model, messages, TestStruct)
+        ttft_static, ttfmc_static, ttlc_static, static_response_length = await static_list_benchmark(client, model, messages, TestStruct)
+        ttft_stream, ttfmc_stream, ttlc_stream, streamed_response_length = await stream_list_benchmark(client, model, messages, TestStruct)
 
         results.append((ttft_static, ttfmc_static, ttlc_static , ttft_stream, ttfmc_stream, ttlc_stream))
+        response_lengths.append((static_response_length, streamed_response_length))
         time.sleep(5)
 
 
     if save:
         with open('tests/benchmarks/list_gen_benchmark.csv', 'w', newline='') as f:
             writer = csv.writer(f)
-            
             writer.writerows(results)
 
-    return ttft_stream, ttfmc_stream, ttlc_stream, ttft_static, ttfmc_static, ttlc_static
+        with open('tests/benchmarks/list_gen_benchmark_response_lengths.csv', 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerows(response_lengths)
 
-
-def create_benchmark_chart():
-    ...
-
+    return ttft_static, ttfmc_static, ttlc_static, ttft_stream, ttfmc_stream, ttlc_stream 
 
 
 if __name__ == "__main__":
     import asyncio
     _logger.setLevel(logging.INFO)
-    asyncio.run(list_benchmark(n = 10))
+    asyncio.run(list_benchmark(n = 20))
 
     # open q's - what do we consider a meaningful chunk?
