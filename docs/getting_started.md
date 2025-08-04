@@ -7,11 +7,11 @@ pip install struct-strm
 
 # Usage
 
-This is an example of a simple case where we return a list from a structured llm output. Despite json strings being returned, `struct_strm` is able to return a streamable list as the response. 
+This is an example of a simple case where we return a list from a structured OpenAI streamed llm output. Despite json strings being returned, `struct_strm` is able to return an incrementally populated list object as the response. 
 
 ```python
-from struct_strm.llm_wrappers import openai_stream_wrapper
-from struct_strm.structs.list_structs import DefaultListStruct
+import asyncio
+from struct_strm import parse_openai_stream
 
 # The query and context for the LLM call
 prompt_context = ""
@@ -24,29 +24,38 @@ class DefaultListStruct(BaseModel):
     # mostly just for testing
     items: list[DefaultListItem] = []
 
-# We can return the json stream from openai
-# *support for more llms in the future
-stream = openai_stream_wrapper(
-    user_query,
-    prompt_context,
-    DefaultListStruct,
-)
+TestStruct = DefaultListStruct
+few_shot_examples = DefaultListStruct(
+    items=[
+        DefaultListItem(item="The Hugging Face Transformers library is an open-source Python library that provides access to a vast collection of pre-trained Transformer models for various machine learning tasks. While initially focused on Natural Language Processing (NLP), its capabilities have expanded to include computer vision, audio processing, and multimodal applications.")
+    ]
+).model_dump_json()
+prompt_context = ""
+query = "Create list describing 10 open source llm tools"
+model = "gpt-4.1-mini"
 
-# Now we can parse the json stream from OpenAI.
-# This creates our incremental output structure, a list, in this case
-import asyncio
-from struct_strm import parse_list_json
-from struct_strm.structs.list_structs import (
-    simulate_stream_list_struct,
-    simulate_stream_openai,
+client = await aget_openai_client()
+messages = []
+messages.append({"role": "system", "content": prompt_context})
+if few_shot_examples is not None:
+    messages.append({"role": "system", "content": f"example response: {few_shot_examples}"})
+messages.append({"role": "user", "content": query})
+
+stream =  client.beta.chat.completions.stream(
+    model=model,
+    messages=messages,
+    response_format=TestStruct,
+    temperature=0.0,
 )
 
 async def test_list_parse(stream):
-    async for items in parse_list_json(stream):
-        print(items)
+    structured_response_stream = parse_openai_stream(stream, TestStruct)
+    async for structure in structured_response_stream:
+        async for list_struct in structure:
+            print(list_struct)
+
 
 asyncio.run(test_list_parse(stream))
-
 ```
 
 As we loop through the items in the async for loop:  

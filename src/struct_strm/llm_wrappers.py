@@ -1,7 +1,6 @@
 from struct_strm.llm_clients import aget_openai_client
 from typing import List, Union, Callable, AsyncGenerator, Dict, Type
-from openai.types.chat import ParsedChatCompletion
-from dataclasses import field
+
 from struct_strm.partial_parser import tree_sitter_parse
 
 # List example with openai
@@ -42,7 +41,7 @@ async def openai_stream_wrapper(
             elif event.type == "error":
                 _logger.error(f"Error in stream: {event.error}")
 
-# maybe implement something more like this later (need to test out)
+
 async def parse_openai_stream(
     response_stream: AsyncGenerator,
     ResponseFormat: Type,
@@ -51,13 +50,4 @@ async def parse_openai_stream(
     Parse the OpenAI stream and yield structured responses.
     """
     async with response_stream as stream:
-        async for event in stream:
-            if event.type == "content.delta":
-                delta = event.delta
-                _logger.debug(f"Delta: {delta}")  # get tokens for better mocks
-                yield tree_sitter_parse(ResponseFormat, delta)
-            elif event.type == "content.done":
-                _logger.info("OpenAI stream complete")
-                pass
-            elif event.type == "error":
-                _logger.error(f"Error in stream: {event.error}")
+        yield tree_sitter_parse(ResponseFormat, stream, source="openai")
