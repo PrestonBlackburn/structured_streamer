@@ -71,8 +71,10 @@ stream_response = client.beta.chat.completions.stream(
 
 form_struct_response = parse_openai(DefaultFormStruct, stream_response)
 async for instance in form_struct_response:
-    print(instance)
+    async for formstruct in instance:
+        print(formstruct)
 ```
+
 
 Fully formed python classes are returned:
 ```bash
@@ -91,7 +93,8 @@ And the corresponding incomplete json string streams would have looked like:
 ```
 
 ### Component Streaming
-The structured responses can then be easily used to generate incrementally rendered web components. For exmaple:  
+The structured responses can then be easily used to generate incrementally rendered web components.  
+For example this form:  
 
 ![Example Form Streaming](https://raw.githubusercontent.com/PrestonBlackburn/structured_streamer/refs/heads/main/docs/img/form_struct_strm.gif)
 

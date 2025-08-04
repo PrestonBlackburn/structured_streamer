@@ -3,10 +3,6 @@
 
 <img src="https://raw.githubusercontent.com/PrestonBlackburn/structured_streamer/refs/heads/gh-pages/img/logo_bg_wide.png" alt="Struct Strm Logo" width="750" role="img">
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/PrestonBlackburn/structured_streamer/blob/main/LICENSE)
-[![Codestyle Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-![Build Status](https://github.com/PrestonBlackburn/structured_streamer/actions/workflows/build_and_publish.yaml/badge.svg?branch=main)
-![Coverage](https://PrestonBlackburn.github.io/structured_streamer/assets/coverage.svg)
 
 </div>
 
@@ -17,6 +13,7 @@
 ## Why Use Structured Streamer?
 
 JSON format is the standard when dealing with structured responses from LLMs. In the early days of LLM structured generation we had to validate the JSON response only after the whole JSON response had been returned. Modern approaches use constrained decoding to ensure that only valid json is returned, eliminating the need for post generation validation, and allowing us to use the response imediately. However, the streamed json response is incomplete, so it can't be parsed using traditional methods. This library aims to make it easier to handle this partially generated json to provide a better end user experience.   
+See the [benchmarks](./benchmarks.md) section in the docs for more details about how this library can speed up your structured response processing. 
 
 <br/>
 
@@ -47,6 +44,7 @@ Due to the nature of partial json streaming, there can be "wrong" ways to stream
 ## Example Component
 This is an example of a form component being incrementally rendered. By using a structured query response from an LLM, in this case a form with form field names and field placeholders, we can stream the form results directly to a HTML component. This drastically reduces the time to first token, and the precieved time that a user needs to wait. More advanced components are under development. 
 
+
 ```python
 from stuct_strm import parse_openai
 from pydantic import BaseModel
@@ -71,8 +69,10 @@ stream_response = client.beta.chat.completions.stream(
 
 form_struct_response = parse_openai(DefaultFormStruct, stream_response)
 async for instance in form_struct_response:
-    print(instance)
+    async for formstruct in instance:
+        print(formstruct)
 ```
+
 
 Fully formed python classes are returned:
 ```bash
@@ -91,10 +91,17 @@ And the corresponding incomplete json string streams would have looked like:
 ```
 
 ### Component Streaming
-The structured responses can then be easily used to generate incrementally rendered web components. For exmaple:  
+The structured responses can then be easily used to generate incrementally rendered web components.  
+For example this form:   
 
 ![Example Form Streaming](https://raw.githubusercontent.com/PrestonBlackburn/structured_streamer/refs/heads/main/docs/img/form_struct_strm.gif)
 
+<br/>
+
+Or we can return data in a grid in more interesting ways.  
+For example this rubric:   
+
+![Example Rubric Streaming](img/rubric_example.gif)
 
 ## Other
 

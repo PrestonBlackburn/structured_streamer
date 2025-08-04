@@ -71,7 +71,7 @@ with open('tests/benchmarks/list_gen_benchmark.csv', 'r') as f:
 
 
     ax.set_xticks(np.arange(len(group_labels)) + width / 2, group_labels)
-    ax.legend(['This Library', 'Default OpenAI Response'], loc='upper right', fontsize=10)
+    ax.legend(['struct-stream library', 'default response'], loc='upper right', fontsize=10)
 
     # # Aesthetics
     ax.set_ylabel("Time (s)", fontsize=12)
@@ -86,7 +86,7 @@ with open('tests/benchmarks/list_gen_benchmark.csv', 'r') as f:
 
     #plt.tight_layout()
     plt.suptitle('Structured Streaming Benchmark', fontsize=14)
-    plt.title("Lower is better, (n=20)", fontsize=10)
+    plt.title("(Lower is better, n=20)", fontsize=10)
     plt.ylabel('Time (seconds)')
     plt.grid(True)
     plt.savefig('tests/benchmarks/list_gen_benchmark.png')
