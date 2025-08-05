@@ -119,14 +119,13 @@ async def get_query_l1(StreamedStruct: type[Any]) -> str:
 
     top_keys = await get_str_keys(StreamedStruct)
     top_keys_formatted = [f'"\\"{key}\\""' for key in top_keys]
-    top_keys_str = "\n".join(top_keys_formatted)
+    top_keys_str = " ".join(top_keys_formatted)
     query_str = f"""(
         (pair
             key: (string) @key
             value: (string) @value)
-        (#any-of? @key
-            {top_keys_str}
-        )
+        (#any-of? @key {top_keys_str})
+    )
     """
     return query_str
 
@@ -150,7 +149,7 @@ async def get_query_l2(
     # need to get the nested key back if we want to recurse later
     for inner_keys, top_key, nested_type in array_keys:
         inner_keys_formatted = [f'"\\"{key}\\""' for key in inner_keys]
-        inner_keys_str = "\n".join(inner_keys_formatted)
+        inner_keys_str = " ".join(inner_keys_formatted)
         if group_by_object:
             query_str = f"""(
             (object
