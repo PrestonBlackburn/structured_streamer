@@ -1,0 +1,7 @@
+xgrammar
+numpy
+torch[cpu]
+transformers
+pydantic
+openai
+tiktoken

@@ -7,6 +7,10 @@ nav:
   - About: index.md
   - Getting Started: getting_started.md
   - Features: parsing_streams.md
+  - Examples: examples.md
+  - Benchmarks: benchmarks.md
+  - Limitations: limitations.md
+
 
 plugins: 
   - techdocs-core
