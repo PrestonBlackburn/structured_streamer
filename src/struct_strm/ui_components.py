@@ -19,8 +19,6 @@ from struct_strm.template import template
 from struct_strm.partial_parser import (
     tree_sitter_parse,
 )
-from pydantic import BaseModel
-
 import logging
 
 _logger = logging.getLogger(__name__)

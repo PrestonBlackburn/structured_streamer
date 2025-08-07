@@ -81,10 +81,7 @@ def test_get_l1_query_dataclass(product_dataclass):
         (pair
             key: (string) @key
             value: (string) @value)
-        (#any-of? @key
-            "\\"product_id\\""
-            "\\"name\\""
-            "\\"price\\""
+        (#any-of? @key "\\"product_id\\"" "\\"name\\"" "\\"price\\"")
         )
     """
 
@@ -136,10 +133,7 @@ def test_get_l1_query_pydantic(product_pydantic_model):
         (pair
             key: (string) @key
             value: (string) @value)
-        (#any-of? @key
-            "\\"product_id\\""
-            "\\"name\\""
-            "\\"price\\""
+        (#any-of? @key "\\"product_id\\"" "\\"name\\"" "\\"price\\"")
         )
     """
     assert l1_query.replace(" ", "") == expected_query_str.replace(" ", "")
@@ -215,10 +209,7 @@ def test_get_queries_dataclass(product_dataclass):
         (pair
             key: (string) @key
             value: (string) @value)
-        (#any-of? @key
-            "\\"product_id\\""
-            "\\"name\\""
-            "\\"price\\""
+        (#any-of? @key "\\"product_id\\"" "\\"name\\"" "\\"price\\"")
         )
     """
     expected_query_str_l2 = """(
@@ -259,10 +250,7 @@ def test_get_queries_pydantic(product_pydantic_model):
         (pair
             key: (string) @key
             value: (string) @value)
-        (#any-of? @key
-            "\\"product_id\\""
-            "\\"name\\""
-            "\\"price\\""
+        (#any-of? @key "\\"product_id\\"" "\\"name\\"" "\\"price\\"")
         )
     """
     assert l1_query is not None

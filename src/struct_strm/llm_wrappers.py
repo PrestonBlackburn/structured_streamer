@@ -1,6 +1,5 @@
 from struct_strm.llm_clients import aget_openai_client
-from typing import List, Union, Callable, AsyncGenerator, Dict, Type
-
+from typing import List, AsyncGenerator, Dict, Type
 from struct_strm.partial_parser import tree_sitter_parse
 
 # List example with openai
