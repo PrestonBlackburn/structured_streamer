@@ -1,6 +1,5 @@
 from struct_strm.llm_clients import aget_openai_client
-from typing import List, Union, Callable, AsyncGenerator, Dict, Type
-
+from typing import List, AsyncGenerator, Dict, Type
 from struct_strm.partial_parser import tree_sitter_parse
 
 # List example with openai
@@ -51,3 +50,12 @@ async def parse_openai_stream(
     """
     async with response_stream as stream:
         yield tree_sitter_parse(ResponseFormat, stream, source="openai")
+
+async def parse_hf_stream(
+    response_stream: AsyncGenerator,
+    ResponseFormat: Type,
+) -> AsyncGenerator:
+    """
+    Parse the Hugging Face stream and yield structured responses.
+    """
+    yield tree_sitter_parse(ResponseFormat, response_stream, source="huggingface")

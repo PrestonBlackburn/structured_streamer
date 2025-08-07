@@ -61,8 +61,6 @@ dev = [
     "black",
     "pytest",
     "pytest-cov[all]",
-    "openai",
-    "tiktoken",
     "pytest-playwright",
     "pytest-asyncio",
     "uvicorn",
@@ -71,6 +69,17 @@ dev = [
     "python-multipart",
     "python-on-whales",
     "requests"
+]
+
+openai = [
+  "openai"
+]
+
+hf = [
+  "numpy",
+  "torch[cpu]",
+  "transformers",
+  "xgrammar"
 ]
 
 docs = [
@@ -89,8 +98,6 @@ dependencies = [
     "black",
     "pytest",
     "pytest-cov",
-    "openai",
-    "tiktoken",
     "pytest-playwright",
     "pytest-asyncio",
     "uvicorn",
