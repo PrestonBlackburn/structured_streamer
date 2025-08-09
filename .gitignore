@@ -5,6 +5,7 @@
 *.log
 **/build/**
 **/venv/**
+**/_version.py
 GEMINI.md
 .coverage
 coverage.xml

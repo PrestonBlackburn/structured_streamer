@@ -1,0 +1,82 @@
+# https://hatch.pypa.io/1.13/how-to/publish/auth/
+name: release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"      # PyPi
+      - "v*.*.*.dev*" # TestPyPi
+
+jobs:
+  publish-testpypi:
+    if: startsWith(github.ref_name, 'v') && contains(github.ref_name, '.dev')
+    runs-on: ubuntu-latest
+    environment:
+      name: test
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+
+      # create hatch env 
+      - name: Install Hatch
+        run: | 
+          python -m pip install --upgrade pip
+          pip install hatch hatch-vcs
+
+      - name: Build Hatch + Test
+        run: |
+          hatch build
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+
+  publish-pypi:
+    if: startsWith(github.ref_name, 'v') && !contains(github.ref_name, '.dev')
+    runs-on: ubuntu-latest
+    environment:
+      name: release
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+
+      # create hatch env 
+      - name: Install Hatch
+        run: | 
+          python -m pip install --upgrade pip
+          pip install hatch hatch-vcs
+
+      - name: Build Hatch + Test
+        run: |
+          hatch build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
