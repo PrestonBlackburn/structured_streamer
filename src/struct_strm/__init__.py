@@ -44,3 +44,5 @@ from struct_strm.structs.form_structs import (
     simulate_stream_form_struct,
     simulate_stream_form_openai,
 )
+
+from ._version import version as __version__

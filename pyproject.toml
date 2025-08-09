@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
@@ -26,7 +26,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 license = "MIT"
-license-files = ["LICEN[CS]E*"]
+license-files = ["LICENSE"]
 
 [project.urls]
 Homepage = "https://prestonblackburn.github.io/structured_streamer/"
@@ -35,7 +35,11 @@ Issues = "https://github.com/PrestonBlackburn/structured_streamer/issues"
 Repository = "https://github.com/PrestonBlackburn/structured_streamer"
 
 [tool.hatch.version]
-path = "src/struct_strm/__about__.py"
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/struct_strm/_version.py"
+
 
 [tool.hatch.build]
 sources = ["src"]
