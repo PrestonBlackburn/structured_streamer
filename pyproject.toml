@@ -22,8 +22,14 @@ authors = [
   { name="Preston Blackburn", email="prestonblckbrn@gmail.com" },
 ]
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent",
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Operating System :: OS Independent",
 ]
 license = "MIT"
 license-files = ["LICENSE"]
