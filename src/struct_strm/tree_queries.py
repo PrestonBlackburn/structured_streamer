@@ -1,4 +1,4 @@
-from typing import Any, get_origin, get_args
+from typing import Any, get_origin, get_args, Union
 from dataclasses import is_dataclass
 from struct_strm.compat import BaseModel, HAS_PYDANTIC, is_pydantic_model
 
@@ -73,7 +73,7 @@ async def has_nested_structure(StreamedStruct: type[Any]) -> bool:
     return has_l2
 
 
-async def get_struct_fields(StreamedStruct: type[Any]) -> Any[dict[str, Any]]:
+async def get_struct_fields(StreamedStruct: type[Any]) -> Union[dict[str, Any], Any]:
     # technically dict_items list of tuple with key/value
 
     if is_pydantic_model(StreamedStruct):

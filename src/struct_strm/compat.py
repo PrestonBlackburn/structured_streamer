@@ -11,11 +11,16 @@ except ImportError:
     BaseModel = None
 
 
-def is_pydantic_model(cls: Any) -> bool:
+def is_pydantic_model(PydanticModel: Any) -> bool:
     is_pydantic_model = False
-    if BaseModel is not None:
-        if issubclass(cls, BaseModel):
-            is_pydantic_model = True
+    if BaseModel is None:
+        return is_pydantic_model
+    if issubclass(type(PydanticModel), BaseModel):
+        is_pydantic_model = True
+        return is_pydantic_model
+    if issubclass(PydanticModel, BaseModel):
+        is_pydantic_model = True
+        return is_pydantic_model
     return is_pydantic_model
 
 

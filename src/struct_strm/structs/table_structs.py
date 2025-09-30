@@ -2,7 +2,7 @@ import asyncio
 import time
 from typing import List, AsyncGenerator
 from pydantic import BaseModel
-from compat import to_json
+from struct_strm.compat import to_json
 
 
 class ExampleRow(BaseModel):
