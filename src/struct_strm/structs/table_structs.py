@@ -2,6 +2,7 @@ import asyncio
 import time
 from typing import List, AsyncGenerator
 from pydantic import BaseModel
+from struct_strm.compat import to_json
 
 
 class ExampleRow(BaseModel):
@@ -33,7 +34,7 @@ async def simulate_stream_table_struct(
             ExampleRow(title="Gattaca", genre="Sci-fi, &Thriller", rating="4"),
         ]
     )
-    json_response = list_struct.model_dump_json()
+    json_response = to_json(list_struct)
     # we want to split on "{", ":", "," and " "
     json_response = (
         json_response.replace("{", "&{&")

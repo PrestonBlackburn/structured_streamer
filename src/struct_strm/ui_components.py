@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 import asyncio
 from dataclasses import dataclass, field
-from typing import Generator, List, AsyncGenerator, Dict
+from typing import Generator, List, AsyncGenerator, Dict, Any
+from types import CoroutineType
 from struct_strm.structs.list_structs import (
     DefaultListStruct,
     DefaultListItem,
@@ -19,6 +20,9 @@ from struct_strm.template import template
 from struct_strm.partial_parser import (
     tree_sitter_parse,
 )
+from struct_strm.compat import to_dict
+
+
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -34,21 +38,23 @@ class AbstractComponent(ABC):
     """
 
     @abstractmethod
-    async def placeholder_render(self, **kwargs) -> Generator[str, None, None]:
+    def placeholder_render(self, **kwargs) -> AsyncGenerator[str, None]:
         pass
 
     @abstractmethod
-    async def partial_render(
-        self, response_stream: Generator[str, None, None], **kwargs
-    ) -> Generator[str, None, None]:
+    def partial_render(
+        self, response_stream: AsyncGenerator[str, None], **kwargs
+    ) -> AsyncGenerator[str, None]:
         pass
 
     @abstractmethod
-    async def complete_render(self, **kwargs) -> Generator[str, None, None]:
+    def complete_render(self, **kwargs) -> AsyncGenerator[str, None]:
         pass
 
     @abstractmethod
-    async def render(self, **kwargs) -> Generator[str, None, None]:
+    def render(
+        self, response_stream: AsyncGenerator[str, None], *args, **kwargs
+    ) -> AsyncGenerator[str, None]:
         pass
 
 
@@ -60,6 +66,7 @@ class ListComponent(AbstractComponent):
     output: str = field(default="html")  # either output html or incremental json
 
     async def placeholder_render(self, **kwargs) -> AsyncGenerator[str, None]:
+
         # fetch placeholer template
         placeholder_template = template("list/list_placeholder.html")
         template_wrapper = template("list/list_container.html")
@@ -134,7 +141,7 @@ class FormComponent(AbstractComponent):
 
         async for streamed_items in form_items_response:
             items = streamed_items.form_fields
-            streamed_list = [i.model_dump() for i in items]
+            streamed_list = [to_dict(i) for i in items]
             self.form = streamed_list
             patial_template_html = partial_template.render(form=list(streamed_list))
             yield template_wrapper.render(form_content=patial_template_html)
@@ -187,7 +194,7 @@ class TableComponent(AbstractComponent):
         async for streamed_items in table_items_response:
 
             items = streamed_items.table
-            streamed_list = [i.model_dump() for i in items]
+            streamed_list = [to_dict(i) for i in items]
             self.table = streamed_list
             # list can be blank
             if streamed_list == []:
@@ -223,7 +230,7 @@ class RubricComponent(AbstractComponent):
     rubric_keys: list[str] = field(default_factory=list)
     rubric_criteria: list[str] = field(default_factory=list)
     rubric_rows_outlined: list[tuple[str]] = field(default_factory=list)
-    rubric_rows_populated: list[tuple[str]] = field(default_factory=list)
+    rubric_rows_populated: list[tuple[str, ...]] = field(default_factory=list)
     output: str = field(default="html")
 
     async def placeholder_render(self, **kwargs) -> AsyncGenerator[str, None]:
@@ -263,7 +270,8 @@ class RubricComponent(AbstractComponent):
             for crit in criteria:
                 # to create the rows, num keys -1
                 crit.criteria_value
-                rows.append(([crit.criteria_value] + [""] * (num_keys - 1)))
+                populate_rows = [crit.criteria_value] + [""] * (num_keys - 1)
+                rows.append(tuple(populate_rows))
 
             self.rubric_rows_outlined = rows
             self.rubric_keys = keys
@@ -296,7 +304,7 @@ class RubricComponent(AbstractComponent):
                 i: value
                 for i, value in enumerate(self.rubric_rows_outlined[criteria_idx])
             }
-            row = {criteria.criteria_value: row_content_by_idx}
+            row = {criteria.criteria_value: row_content_by_idx}  # type: ignore
             table_content_grid.update(row)
 
         async for rubric in rubric_cell_response:
@@ -308,7 +316,7 @@ class RubricComponent(AbstractComponent):
                 _logger.debug(cell.category, cell.criteria)
                 _logger.debug(f"Keys: {self.rubric_keys}")
 
-                criterias = [item.criteria_value for item in self.rubric_criteria]
+                criterias = [item.criteria_value for item in self.rubric_criteria]  # type: ignore
                 _logger.debug(f"Criterias: {criterias}")
                 if (
                     cell.category not in self.rubric_keys
@@ -319,14 +327,14 @@ class RubricComponent(AbstractComponent):
                 row_key = keys[cell.category]
                 table_content_grid[cell.criteria][row_key] = cell.content
 
-                table_content_grid_rows = []
+                table_content_grid_rows: list = []
                 for row_content in table_content_grid.values():
                     table_content_grid_rows.append(
-                        (value for _, value in row_content.items())
+                        (value for _, value in row_content.items())  # type: ignore
                     )
 
                 self.rubric_rows_populated = [
-                    list(row) for row in table_content_grid_rows
+                    tuple(row) for row in table_content_grid_rows
                 ]
                 _logger.debug(f"Table content grid rows: {self.rubric_rows_populated}")
                 patial_template_html = partial_template.render(

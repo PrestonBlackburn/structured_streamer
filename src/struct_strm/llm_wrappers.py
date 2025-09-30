@@ -1,5 +1,5 @@
 from struct_strm.llm_clients import aget_openai_client
-from typing import List, AsyncGenerator, Dict, Type
+from typing import List, AsyncGenerator, Dict, Type, Union, AsyncIterator
 from struct_strm.partial_parser import tree_sitter_parse
 
 # List example with openai
@@ -7,12 +7,13 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+
 # I think this is too high level, the user should be able to use the openai client like normal...
 async def openai_stream_wrapper(
     user_query: str,
     prompt_context: str,
     ResponseFormat: Type,
-    few_shot_examples: List[Dict[str, str]] = None,
+    few_shot_examples: Union[List[Dict[str, str]], None] = None,
 ) -> AsyncGenerator:
 
     client = await aget_openai_client()
@@ -42,7 +43,7 @@ async def openai_stream_wrapper(
 
 
 async def parse_openai_stream(
-    response_stream: AsyncGenerator,
+    response_stream: "AsyncChatCompletionStreamManager[AsyncGenerator[str, None]",  # type: ignore
     ResponseFormat: Type,
 ) -> AsyncGenerator:
     """
@@ -50,6 +51,7 @@ async def parse_openai_stream(
     """
     async with response_stream as stream:
         yield tree_sitter_parse(ResponseFormat, stream, source="openai")
+
 
 async def parse_hf_stream(
     response_stream: AsyncGenerator,
@@ -59,3 +61,4 @@ async def parse_hf_stream(
     Parse the Hugging Face stream and yield structured responses.
     """
     yield tree_sitter_parse(ResponseFormat, response_stream, source="huggingface")
+

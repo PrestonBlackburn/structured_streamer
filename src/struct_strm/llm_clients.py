@@ -1,9 +1,12 @@
 from functools import lru_cache
 import os
+from typing import Any
+
 try:
     from openai import AsyncOpenAI
 except ImportError:
     AsyncOpenAI = None
+
 
 @lru_cache(maxsize=1)
 def get_openai_env():
@@ -14,9 +17,11 @@ def get_openai_env():
     return openai_params
 
 
-async def aget_openai_client() -> AsyncOpenAI:
+async def aget_openai_client() -> Any:
     if AsyncOpenAI is None:
-        raise ImportError("OpenAI library is not available. Please install struct-strm with the openai option - pip install struct-strm[openai].")
+        raise ImportError(
+            "OpenAI library is not available. Please install struct-strm with the openai option - pip install struct-strm[openai]."
+        )
     params = get_openai_env()
     client = AsyncOpenAI(api_key=params["api_key"])
     return client
