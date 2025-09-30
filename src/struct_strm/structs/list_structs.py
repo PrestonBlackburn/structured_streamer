@@ -3,6 +3,7 @@ import time
 from typing import List, AsyncGenerator
 from pydantic import BaseModel
 from dataclasses import dataclass, field
+from struct_strm.compat import to_json
 
 
 class DefaultListItem(BaseModel):
@@ -16,8 +17,44 @@ class DefaultListStruct(BaseModel):
 
 
 @dataclass
+class DefaultListItemDC:
+    item: str = ""
+
+
+@dataclass
+class DefaultListStructDC:
+    items: list[DefaultListItemDC] = field(default_factory=lambda: [])
+
+
+@dataclass
 class DefaultListDataclass:
     items: list[DefaultListItem] = field(default_factory=lambda: [])
+
+
+async def simulate_stream_list_struct_dataclass(
+    interval_sec: float = 0.0,
+) -> AsyncGenerator[str, None]:
+    # Simulate a stream from a structured generator like OpenAI
+    list_struct = DefaultListStructDC(
+        items=[
+            DefaultListItemDC(item="apple &orange &straw&berry"),
+            DefaultListItemDC(item="banana &kiwi &grape"),
+            DefaultListItemDC(item="mango &pineapple"),
+        ]
+    )
+    json_response = to_json(list_struct)
+    # we want to split on "{", ":", "," and " "
+    json_response = (
+        json_response.replace("{", "&{&")
+        .replace(":", "&:&")
+        .replace(",", "&,&")
+        .replace("}", "&}&")
+    )
+    stream_response = json_response.split("&")
+    for item in stream_response:
+        item = item.replace("&", "")
+        await asyncio.sleep(interval_sec)
+        yield item
 
 
 async def simulate_stream_list_struct(
@@ -31,7 +68,7 @@ async def simulate_stream_list_struct(
             DefaultListItem(item="mango &pineapple"),
         ]
     )
-    json_response = list_struct.model_dump_json()
+    json_response = to_json(list_struct)
     # we want to split on "{", ":", "," and " "
     json_response = (
         json_response.replace("{", "&{&")

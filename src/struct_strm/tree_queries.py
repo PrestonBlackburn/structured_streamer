@@ -1,6 +1,6 @@
 from typing import Any, get_origin, get_args
 from dataclasses import is_dataclass
-from pydantic import BaseModel
+from struct_strm.compat import BaseModel, HAS_PYDANTIC, is_pydantic_model
 
 import logging
 
@@ -8,13 +8,14 @@ _logger = logging.getLogger(__name__)
 # right now just going to focus on single and "two level" structs
 # note - nested structures must have different keys than parents
 
+
 async def get_str_keys(StreamedStruct: type[Any]) -> list[str]:
     # right now only supporting string fields (no arrays, numbers will be "strings")
     # also won't handle optional strings,
     # but really there should always be a default that is not noe
     l1_fields = []
 
-    if issubclass(StreamedStruct, BaseModel):
+    if is_pydantic_model(StreamedStruct):
         _logger.debug(f"Got Pydantic Class: {StreamedStruct}")
         fields = StreamedStruct.model_fields.items()
         for name, field_type in fields:
@@ -39,12 +40,12 @@ async def has_structure(annotation: Any) -> bool:
     if origin in (list, tuple, set):
         inner = args[0] if args else None
         if isinstance(inner, type) and (
-            issubclass(inner, BaseModel) or is_dataclass(inner)
+            is_pydantic_model(inner) or is_dataclass(inner)
         ):
             return True
     # If structure
     if isinstance(annotation, type) and (
-        issubclass(annotation, BaseModel) or is_dataclass(annotation)
+        is_pydantic_model(annotation) or is_dataclass(annotation)
     ):
         return True
 
@@ -53,7 +54,7 @@ async def has_structure(annotation: Any) -> bool:
 
 async def has_nested_structure(StreamedStruct: type[Any]) -> bool:
     # check l2 (nested) structs for both dataclass and basemodel
-    if issubclass(StreamedStruct, BaseModel):
+    if is_pydantic_model(StreamedStruct):
         _logger.debug(f"Got Pydantic Class: {StreamedStruct}")
         annotations = [
             field_type.annotation
@@ -72,10 +73,10 @@ async def has_nested_structure(StreamedStruct: type[Any]) -> bool:
     return has_l2
 
 
-async def get_struct_fields(StreamedStruct: type[Any]) -> dict:
+async def get_struct_fields(StreamedStruct: type[Any]) -> Any[dict[str, Any]]:
     # technically dict_items list of tuple with key/value
 
-    if issubclass(StreamedStruct, BaseModel):
+    if is_pydantic_model(StreamedStruct):
         fields = StreamedStruct.model_fields.items()
     elif is_dataclass(StreamedStruct):
         fields = StreamedStruct.__annotations__.items()
@@ -93,7 +94,7 @@ async def get_array_keys(
     fields = await get_struct_fields(StreamedStruct)
     _logger.debug(f"Fields For Array {fields}")
     for key, field_info in fields:
-        if issubclass(StreamedStruct, BaseModel):
+        if is_pydantic_model(StreamedStruct):
             annotation = field_info.annotation
         else:
             annotation = field_info
@@ -108,7 +109,7 @@ async def get_array_keys(
                 raise ValueError("nested classes must be structs")
             inner_keys: list[str] = await get_str_keys(inner_cls)
             if isinstance(inner_cls, type) and (
-                issubclass(inner_cls, BaseModel) or is_dataclass(inner_cls)
+                is_pydantic_model(inner_cls) or is_dataclass(inner_cls)
             ):
                 array_keys.append((inner_keys, key, inner_cls))
 

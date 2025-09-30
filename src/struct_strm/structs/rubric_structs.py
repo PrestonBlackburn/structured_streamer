@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from enum import Enum
 from typing import AsyncGenerator
 import asyncio
+from struct_strm.compat import to_json
 
 # this will need to be dynamic -
 # so based on the headers we get back we can construct a class dynamically
@@ -23,7 +24,6 @@ class DefaultOutlineRubric(BaseModel):
     criteria: list[DefaultCriteria] = []
 
 
-
 def create_rubric_enums(
     generated_outline: DefaultOutlineRubric,
 ) -> type:
@@ -32,7 +32,7 @@ def create_rubric_enums(
     criteria_enum_cls = Enum(
         "ReturnedCriteria",
         {
-            (item.criteria.replace(" ", "_"), item.criteria)
+            (item.criteria_value.replace(" ", "_"), item.criteria_value)
             for item in generated_outline.criteria
         },
         type=str,
@@ -41,7 +41,7 @@ def create_rubric_enums(
     category_enum_cls = Enum(
         "ReturnedCategory",
         {
-            (item.category.replace(" ", "_"), item.category)
+            (item.category_value.replace(" ", "_"), item.category_value)
             for item in generated_outline.category
         },
         type=str,
@@ -86,7 +86,7 @@ async def simulate_stream_rubric_outline_struct(
             DefaultCategory(category_value="Functional"),
         ],
     )
-    json_response = rubric_struct.model_dump_json()
+    json_response = to_json(rubric_struct)
     # we want to split on "{", ":", "," and " "
     json_response = (
         json_response.replace("{", "&{&")
@@ -155,7 +155,7 @@ async def simulate_stream_rubric_final_struct(
             ),
         ]
     )
-    json_response = rubric_final_struct.model_dump_json()
+    json_response = to_json(rubric_final_struct)
     json_response = (
         json_response.replace("{", "&{&")
         .replace(":", "&:&")

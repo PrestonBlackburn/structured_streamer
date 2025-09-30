@@ -57,7 +57,10 @@ async def parse_query_matches_list(
     # the problem is we are going to get a flat list here, but we need to parition it by struct
     for idx, capture_dict in matches:
         # handle none case later
-        dict_pair_end_byte = capture_dict.get("obj")[0].end_byte
+        dict_pair_end_byte = capture_dict.get("obj")
+        if dict_pair_end_byte is None:
+            continue
+        dict_pair_end_byte = dict_pair_end_byte[0].end_byte
         if dict_pair_end_byte != current_dict_end_byte:
             current_dict_end_byte = dict_pair_end_byte
             result_idx += 1
@@ -143,7 +146,7 @@ async def query_tree_l1(
 
 # how to handle lists better?
 async def query_tree_l2(
-    snapshot: bytes, queries: dict[str, dict[str, any]], parser: Parser, lang: Language
+    snapshot: bytes, queries: dict[str, dict[str, Any]], parser: Parser, lang: Language
 ) -> dict[str, list[str]]:
     # we need {"l1_key_01": [{stuff:..., more_stuff: ....}, ...], "l1_key_02": [{stuff:..., more_stuff:...}, ...]}
     # this query is specifically for values that are arrays
@@ -167,11 +170,10 @@ async def query_tree_l2(
     return result_set
 
 
-
 async def tree_sitter_parse(
-    struct: type[Any], 
+    struct: type[Any],
     response_stream: AsyncGenerator[str, None],
-    source:str = None
+    source: Union[str, None] = None,
 ) -> AsyncGenerator[Union[type[Any], dict], None]:
     # return an instance of the struct for every response
     response = struct()
@@ -179,7 +181,9 @@ async def tree_sitter_parse(
     JSON_LANG = Language(ts_json.language())
     parser = Parser(JSON_LANG)
 
-    queries: tuple[str, dict[str, dict[str, any]]] = await get_queries(struct)
+    queries: tuple[str | None, dict[str, dict[str, str]] | None] = await get_queries(
+        struct
+    )
 
     l1_query = queries[0]
     l2_queries = queries[1]
@@ -195,7 +199,8 @@ async def tree_sitter_parse(
             except Exception as e:
                 _logger.error(f"Error in openai_chunk_handler: {e}")
                 continue
-
+        if isinstance(chunk, ContinueSignal):
+            continue
         buffer = buffer + chunk
         buffer_closed = buffer + '"'
         if l1_query is not None:
@@ -211,3 +216,4 @@ async def tree_sitter_parse(
         _logger.debug(f"For stream {buffer}")
         response = struct(**part_l1)
         yield response
+

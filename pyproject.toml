@@ -78,7 +78,8 @@ dev = [
     "sse-starlette",
     "python-multipart",
     "python-on-whales",
-    "requests"
+    "requests",
+    "pyright"
 ]
 
 openai = [
@@ -115,7 +116,8 @@ dependencies = [
     "sse-starlette",
     "python-multipart",
     "python-on-whales",
-    "requests"
+    "requests",
+    "pyright"
 ]
 
 [tool.hatch.envs.docs]

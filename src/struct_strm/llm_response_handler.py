@@ -1,4 +1,5 @@
 from typing import Union
+
 try:
     from openai.lib.streaming.chat._events import ChunkEvent
 except ImportError:
@@ -12,12 +13,16 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-class ContinueSignal(Exception): pass
+class ContinueSignal(Exception):
+    pass
 
-async def openai_chunk_handler(chunk: ChunkEvent) -> Union[str, ContinueSignal]:
+
+async def openai_chunk_handler(chunk: ChunkEvent) -> Union[str, ContinueSignal]:  # type: ignore
     if ChunkEvent is None:
-        raise ImportError("OpenAI library is not available. Please install struct-strm with the openai option - pip install struct-strm[openai].")
-    
+        raise ImportError(
+            "OpenAI library is not available. Please install struct-strm with the openai option - pip install struct-strm[openai]."
+        )
+
     if chunk.type == "content.delta":
         chunk = chunk.delta
         _logger.debug(f"Delta: {chunk}")  # get tokens for better mocks
@@ -30,4 +35,3 @@ async def openai_chunk_handler(chunk: ChunkEvent) -> Union[str, ContinueSignal]:
         raise ContinueSignal()
     else:
         raise ContinueSignal()
-
