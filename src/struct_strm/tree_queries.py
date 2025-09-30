@@ -95,7 +95,7 @@ async def get_array_keys(
     _logger.debug(f"Fields For Array {fields}")
     for key, field_info in fields:
         if is_pydantic_model(StreamedStruct):
-            annotation = field_info.annotation
+            annotation = field_info.annotation  # type: ignore
         else:
             annotation = field_info
         origin = get_origin(annotation)
