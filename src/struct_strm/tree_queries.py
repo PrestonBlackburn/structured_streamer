@@ -1,6 +1,8 @@
 from typing import Any, get_origin, get_args, Union
 from dataclasses import is_dataclass
 from struct_strm.compat import BaseModel, HAS_PYDANTIC, is_pydantic_model
+import inspect 
+
 
 import logging
 
@@ -9,23 +11,50 @@ _logger = logging.getLogger(__name__)
 # note - nested structures must have different keys than parents
 
 
-async def get_str_keys(StreamedStruct: type[Any]) -> list[str]:
-    # right now only supporting string fields (no arrays, numbers will be "strings")
-    # also won't handle optional strings,
-    # but really there should always be a default that is not noe
+# async def get_str_keys(StreamedStruct: type[Any]) -> list[str]:
+#     # right now only supporting string fields (no arrays, numbers will be "strings")
+#     # also won't handle optional strings,
+#     # but really there should always be a default that is not noe
+#     l1_fields = []
+
+#     if is_pydantic_model(StreamedStruct):
+#         _logger.debug(f"Got Pydantic Class: {StreamedStruct}")
+#         fields = StreamedStruct.model_fields.items()
+#         for name, field_type in fields:
+#             if field_type.annotation == str:
+#                 l1_fields.append(name)
+#     elif is_dataclass(StreamedStruct):
+#         _logger.debug(f"Got Dataclass Class {StreamedStruct}")
+#         fields = StreamedStruct.__annotations__.items()
+#         for name, field_type in fields:
+#             if field_type == str:
+#                 l1_fields.append(name)
+#     else:
+#         raise ValueError(f"Expected Pydantic model or dataclass, got: {StreamedStruct}")
+
+#     return l1_fields
+
+
+# A set of supported primitive types
+PRIMITIVE_TYPES = {str, int, float, bool}
+
+async def get_primitive_keys(StreamedStruct: type[Any]) -> list[str]:
     l1_fields = []
+    #Added as primitive dtypes 
 
     if is_pydantic_model(StreamedStruct):
         _logger.debug(f"Got Pydantic Class: {StreamedStruct}")
         fields = StreamedStruct.model_fields.items()
         for name, field_type in fields:
-            if field_type.annotation == str:
+            # Check if the annotation is in our set of primitive types
+            if field_type.annotation in PRIMITIVE_TYPES:
                 l1_fields.append(name)
     elif is_dataclass(StreamedStruct):
         _logger.debug(f"Got Dataclass Class {StreamedStruct}")
         fields = StreamedStruct.__annotations__.items()
         for name, field_type in fields:
-            if field_type == str:
+            # Check if the type is in our set of primitive types
+            if field_type in PRIMITIVE_TYPES:
                 l1_fields.append(name)
     else:
         raise ValueError(f"Expected Pydantic model or dataclass, got: {StreamedStruct}")
@@ -107,7 +136,7 @@ async def get_array_keys(
             # get the key for the inner class (prob need to iterate for multiple keys)
             if inner_cls is None:
                 raise ValueError("nested classes must be structs")
-            inner_keys: list[str] = await get_str_keys(inner_cls)
+            inner_keys: list[str] = await get_primitive_keys(inner_cls)
             if isinstance(inner_cls, type) and (
                 is_pydantic_model(inner_cls) or is_dataclass(inner_cls)
             ):
@@ -118,13 +147,13 @@ async def get_array_keys(
 
 async def get_query_l1(StreamedStruct: type[Any]) -> str:
 
-    top_keys = await get_str_keys(StreamedStruct)
+    top_keys = await get_primitive_keys(StreamedStruct)
     top_keys_formatted = [f'"\\"{key}\\""' for key in top_keys]
     top_keys_str = " ".join(top_keys_formatted)
     query_str = f"""(
         (pair
             key: (string) @key
-            value: (string) @value)
+            value: (_value) @value)
         (#any-of? @key {top_keys_str})
     )
     """
@@ -138,7 +167,7 @@ async def get_query_l2(
     # will revisit in the future, but I think that's all I need
     # return in format - {"struct_key_01": query_01, "struct_key_02": query_02}
     queries = {}
-    top_keys = await get_str_keys(StreamedStruct)
+    top_keys = await get_primitive_keys(StreamedStruct)
     filter_keys_str = ""
 
     if top_keys != []:
@@ -156,7 +185,7 @@ async def get_query_l2(
             (object
                 (pair
                     key: (string) @key
-                    value: (string) @value)
+                    value: (_value) @value)
                 {filter_keys_str}
                 (#any-of? @key {inner_keys_str})
             )) @obj
@@ -165,7 +194,7 @@ async def get_query_l2(
             query_str = f"""(
                 (pair
                     key: (string) @key
-                    value: (string) @value)
+                    value: (_value) @value)
                 {filter_keys_str}
                 (#any-of? @key {inner_keys_str})
             )
@@ -185,7 +214,7 @@ async def get_queries(
     # check l1 and l2 keys
 
     # if has no l1 keys then we can skip
-    has_l1_key = await get_str_keys(StreamedStruct) != []
+    has_l1_key = await get_primitive_keys(StreamedStruct) != []
     # need to check for nested structures
     has_l2_key = await has_nested_structure(StreamedStruct)
 

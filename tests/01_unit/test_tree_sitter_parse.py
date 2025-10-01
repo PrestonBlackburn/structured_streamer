@@ -18,6 +18,8 @@ from struct_strm.structs.table_structs import (
     ExampleRow,
     ExampleTableStruct,
 )
+from pydantic import BaseModel 
+
 
 
 @pytest.mark.asyncio
@@ -125,3 +127,52 @@ async def test_parse_list_json_dataclass():
         ]
     )
     assert all_items[-1] == final_item
+
+
+@pytest.mark.asyncio
+async def test_parse_json_with_multiple_types():
+    
+    # 1. Define the model with multiple primitive types
+    class ProfileWithTypes(BaseModel):
+        name: str
+        age: int
+        is_active: bool
+        score: float
+        notes: str | None
+
+    # 2. Define a function to simulate the stream of JSON chunks
+    async def simulate_stream():
+        chunks = [
+            ' \n { \n "name": "Alice",',
+            ' "age": 30,',
+            ' "is_active": true,',
+            ' "score": 95.5,',
+            ' "notes": null',
+            ' }'
+        ]
+        for chunk in chunks:
+            yield chunk
+
+    # 3. Run the parser
+    all_items = []
+    # This is the main call to the library's parser function
+    async for instance in tree_sitter_parse(ProfileWithTypes, simulate_stream()):
+        all_items.append(instance)
+
+    # 4. Define the final, correct object you expect to get
+    final_item = ProfileWithTypes(
+        name="Alice",
+        age=30,
+        is_active=True,
+        score=95.5,
+        notes=None
+    )
+
+    # 5. Assert that the last item from the stream matches your expected object
+    assert all_items[-1] == final_item
+    
+    # It's also good to check the types explicitly on the final object
+    final_parsed_object = all_items[-1]
+    assert isinstance(final_parsed_object.age, int)
+    assert isinstance(final_parsed_object.is_active, bool)
+    assert isinstance(final_parsed_object.score, float)
