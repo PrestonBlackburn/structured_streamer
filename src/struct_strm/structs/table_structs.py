@@ -1,7 +1,7 @@
 import asyncio
-import time
 from typing import List, AsyncGenerator
 from pydantic import BaseModel
+from dataclasses import dataclass, field
 from struct_strm.compat import to_json
 
 
@@ -21,19 +21,54 @@ class ExampleTableStruct(BaseModel):
     #  ]
 
 
+@dataclass
+class DataclassExampleRow:
+    title: str = ""
+    genre: str = ""
+    rating: str = ""
+
+
+@dataclass
+class DataclassExampleTableStruct:
+    table: List[DataclassExampleRow] = field(default_factory=lambda: [])
+
+
 async def simulate_stream_table_struct(
-    interval_sec: float = 0.0,
+    interval_sec: float = 0.0, struct_type: str = "pydantic"
 ) -> AsyncGenerator[str, None]:
     # Simulate a stream from a structured generator like OpenAI
-    list_struct = ExampleTableStruct(
-        table=[
-            ExampleRow(title="Akira", genre="action, &cyberpunk, &horror", rating="5"),
-            ExampleRow(
-                title="2001: A &Space Odyssey", genre="Sci-fi, &Suspense", rating="5"
-            ),
-            ExampleRow(title="Gattaca", genre="Sci-fi, &Thriller", rating="4"),
-        ]
-    )
+    if struct_type == "pydantic":
+        list_struct = ExampleTableStruct(
+            table=[
+                ExampleRow(
+                    title="Akira", genre="action, &cyberpunk, &horror", rating="5"
+                ),
+                ExampleRow(
+                    title="2001: A &Space Odyssey",
+                    genre="Sci-fi, &Suspense",
+                    rating="5",
+                ),
+                ExampleRow(title="Gattaca", genre="Sci-fi, &Thriller", rating="4"),
+            ]
+        )
+    elif struct_type == "dataclass":
+        list_struct = DataclassExampleTableStruct(
+            table=[
+                DataclassExampleRow(
+                    title="Akira", genre="action, &cyberpunk, &horror", rating="5"
+                ),
+                DataclassExampleRow(
+                    title="2001: A &Space Odyssey",
+                    genre="Sci-fi, &Suspense",
+                    rating="5",
+                ),
+                DataclassExampleRow(
+                    title="Gattaca", genre="Sci-fi, &Thriller", rating="4"
+                ),
+            ]
+        )
+    else:
+        raise ValueError(f"invalid struct type selection: {struct_type}")
     json_response = to_json(list_struct)
     # we want to split on "{", ":", "," and " "
     json_response = (

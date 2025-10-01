@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import AsyncGenerator
 import asyncio
@@ -22,6 +23,22 @@ class DefaultCategory(BaseModel):
 class DefaultOutlineRubric(BaseModel):
     category: list[DefaultCategory] = []
     criteria: list[DefaultCriteria] = []
+
+
+@dataclass
+class DataclassDefaultCriteria:
+    criteria_value: str = ""
+
+
+@dataclass
+class DataclassDefaultCategory:
+    category_value: str = ""
+
+
+@dataclass
+class DataclassDefaultOutlineRubric:
+    category: list[DataclassDefaultCategory] = field(default_factory=lambda: [])
+    criteria: list[DataclassDefaultCriteria] = field(default_factory=lambda: [])
 
 
 def create_rubric_enums(
