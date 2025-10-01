@@ -1,6 +1,6 @@
 import asyncio
 from struct_strm.tree_queries import (
-    get_str_keys,
+    get_primitive_keys,
     get_query_l1,
     get_query_l2,
     get_queries,
@@ -55,18 +55,27 @@ def product_pydantic_model(item_pydantic_model):
 
     return Product
 
+@pytest.fixture
+def profile_with_all_types_pydantic():
+    class Profile(BaseModel):
+        name: str
+        age: int
+        is_active: bool
+        score: float
+        items: list[str] # This should be ignored by the primitive key search
+    return Profile
 
-def test_get_str_keys_dataclass(product_dataclass):
+def test_get_primitive_keys_dataclass(product_dataclass):
     Product = product_dataclass
-    keys = asyncio.run(get_str_keys(Product))
+    keys = asyncio.run(get_primitive_keys(Product))
     for key in ["product_id", "name", "price"]:
         assert key in keys
     assert "items" not in keys
 
 
-def test_get_str_keys_pydantic(product_pydantic_model):
+def test_get_primitive_keys_pydantic(product_pydantic_model):
     Product = product_pydantic_model
-    keys = asyncio.run(get_str_keys(Product))
+    keys = asyncio.run(get_primitive_keys(Product))
     for key in ["product_id", "name", "price"]:
         assert key in keys
     assert "items" not in keys
@@ -80,7 +89,7 @@ def test_get_l1_query_dataclass(product_dataclass):
     expected_query_str = f"""(
         (pair
             key: (string) @key
-            value: (string) @value)
+            value: (_value) @value)
         (#any-of? @key "\\"product_id\\"" "\\"name\\"" "\\"price\\"")
         )
     """
@@ -96,7 +105,7 @@ def test_get_l2_query_dataclass(product_dataclass):
         (object
         (pair
             key: (string) @key
-            value: (string) @value)
+            value: (_value) @value)
         (#not-eq? @key "\\"product_id\\"")
         (#not-eq? @key "\\"name\\"")
         (#not-eq? @key "\\"price\\"")
@@ -114,7 +123,7 @@ def test_get_l2_query_dataclass_ungrouped(product_dataclass):
     expected_query_str = """(
         (pair
             key: (string) @key
-            value: (string) @value)
+            value: (_value) @value)
         (#not-eq? @key "\\"product_id\\"")
         (#not-eq? @key "\\"name\\"")
         (#not-eq? @key "\\"price\\"")
@@ -132,7 +141,7 @@ def test_get_l1_query_pydantic(product_pydantic_model):
     expected_query_str = f"""(
         (pair
             key: (string) @key
-            value: (string) @value)
+            value: (_value) @value)
         (#any-of? @key "\\"product_id\\"" "\\"name\\"" "\\"price\\"")
         )
     """
@@ -147,7 +156,7 @@ def test_get_l2_query_pydantic(product_pydantic_model):
         (object
         (pair
             key: (string) @key
-            value: (string) @value)
+            value: (_value) @value)
         (#not-eq? @key "\\"product_id\\"")
         (#not-eq? @key "\\"name\\"")
         (#not-eq? @key "\\"price\\"")
@@ -165,7 +174,7 @@ def test_get_l2_query_pydantic_ungrouped(product_pydantic_model):
     expected_query_str = """(
         (pair
             key: (string) @key
-            value: (string) @value)
+            value: (_value) @value)
         (#not-eq? @key "\\"product_id\\"")
         (#not-eq? @key "\\"name\\"")
         (#not-eq? @key "\\"price\\"")
@@ -208,7 +217,7 @@ def test_get_queries_dataclass(product_dataclass):
     expected_query_str_l1 = f"""(
         (pair
             key: (string) @key
-            value: (string) @value)
+            value: (_value) @value)
         (#any-of? @key "\\"product_id\\"" "\\"name\\"" "\\"price\\"")
         )
     """
@@ -216,7 +225,7 @@ def test_get_queries_dataclass(product_dataclass):
         (object
         (pair
             key: (string) @key
-            value: (string) @value)
+            value: (_value) @value)
         (#not-eq? @key "\\"product_id\\"")
         (#not-eq? @key "\\"name\\"")
         (#not-eq? @key "\\"price\\"")
@@ -238,18 +247,18 @@ def test_get_queries_pydantic(product_pydantic_model):
         (object
         (pair
             key: (string) @key
-            value: (string) @value)
+            value: (_value) @value)
         (#not-eq? @key "\\"product_id\\"")
         (#not-eq? @key "\\"name\\"")
         (#not-eq? @key "\\"price\\"")
         (#any-of? @key "\\"sku\\"")
     )) @obj
     """
-
+    #in this ive replaced string -> _value wrt the grammer 
     expected_query_str_l1 = f"""(
         (pair
             key: (string) @key
-            value: (string) @value)
+            value: (_value) @value)
         (#any-of? @key "\\"product_id\\"" "\\"name\\"" "\\"price\\"")
         )
     """
@@ -259,3 +268,36 @@ def test_get_queries_pydantic(product_pydantic_model):
     assert l2_query["items"]["query_str"].replace(
         " ", ""
     ) == expected_query_str_l2.replace(" ", "")
+
+
+def test_replaced_str_keys_pydantic(profile_with_all_types_pydantic):
+    Profile = profile_with_all_types_pydantic
+    from struct_strm.tree_queries import get_primitive_keys
+    
+    keys = asyncio.run(get_primitive_keys(Profile))
+    
+    # Assert that all primitive types are found
+    for key in ["name", "age", "is_active", "score"]:
+        assert key in keys
+        
+    # Assert that the list is NOT included
+    assert "items" not in keys
+
+
+# Add this function to the end of the file
+def test_get_l1_query_with_all_types(profile_with_all_types_pydantic):
+    Profile = profile_with_all_types_pydantic
+
+    l1_query = asyncio.run(get_query_l1(Profile))
+    
+    # Note the value is now (_value) instead of (string)
+    expected_query_str = f"""(
+        (pair
+            key: (string) @key
+            value: (_value) @value)  
+        (#any-of? @key "\\"name\\"" "\\"age\\"" "\\"is_active\\"" "\\"score\\"")
+        )
+    """
+    
+    # The .replace() helps ignore whitespace differences
+    assert l1_query.replace(" ", "").replace("\n", "") == expected_query_str.replace(" ", "").replace("\n", "")
