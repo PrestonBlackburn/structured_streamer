@@ -9,6 +9,7 @@ _logger = logging.getLogger(__name__)
 # right now just going to focus on single and "two level" structs
 # note - nested structures must have different keys than parents
 
+#Orignal function commented ----- 
 
 # async def get_str_keys(StreamedStruct: type[Any]) -> list[str]:
 #     # right now only supporting string fields (no arrays, numbers will be "strings")
@@ -37,6 +38,8 @@ _logger = logging.getLogger(__name__)
 # A set of supported primitive types
 PRIMITIVE_TYPES = {str, int, float, bool}
 
+
+#I've updated this function to support the set of primitive dtypes
 async def get_str_keys(StreamedStruct: type[Any]) -> list[str]:
     l1_fields = []
     #Added as primitive dtypes 
@@ -149,6 +152,7 @@ async def get_query_l1(StreamedStruct: type[Any]) -> str:
     top_keys = await get_str_keys(StreamedStruct)
     top_keys_formatted = [f'"\\"{key}\\""' for key in top_keys]
     top_keys_str = " ".join(top_keys_formatted)
+    #replaced string->_value
     query_str = f"""(
         (pair
             key: (string) @key
@@ -180,6 +184,7 @@ async def get_query_l2(
         inner_keys_formatted = [f'"\\"{key}\\""' for key in inner_keys]
         inner_keys_str = " ".join(inner_keys_formatted)
         if group_by_object:
+            #replaced string->_value
             query_str = f"""(
             (object
                 (pair

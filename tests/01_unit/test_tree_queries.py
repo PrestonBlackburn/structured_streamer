@@ -254,7 +254,7 @@ def test_get_queries_pydantic(product_pydantic_model):
         (#any-of? @key "\\"sku\\"")
     )) @obj
     """
-
+    #in this ive replaced string -> _value wrt the grammer 
     expected_query_str_l1 = f"""(
         (pair
             key: (string) @key
@@ -294,7 +294,7 @@ def test_get_l1_query_with_all_types(profile_with_all_types_pydantic):
     expected_query_str = f"""(
         (pair
             key: (string) @key
-            value: (_value) @value) 
+            value: (_value) @value)  
         (#any-of? @key "\\"name\\"" "\\"age\\"" "\\"is_active\\"" "\\"score\\"")
         )
     """
