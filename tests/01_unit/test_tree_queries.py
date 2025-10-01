@@ -1,6 +1,6 @@
 import asyncio
 from struct_strm.tree_queries import (
-    get_str_keys,
+    get_primitive_keys,
     get_query_l1,
     get_query_l2,
     get_queries,
@@ -65,17 +65,17 @@ def profile_with_all_types_pydantic():
         items: list[str] # This should be ignored by the primitive key search
     return Profile
 
-def test_get_str_keys_dataclass(product_dataclass):
+def test_get_primitive_keys_dataclass(product_dataclass):
     Product = product_dataclass
-    keys = asyncio.run(get_str_keys(Product))
+    keys = asyncio.run(get_primitive_keys(Product))
     for key in ["product_id", "name", "price"]:
         assert key in keys
     assert "items" not in keys
 
 
-def test_get_str_keys_pydantic(product_pydantic_model):
+def test_get_primitive_keys_pydantic(product_pydantic_model):
     Product = product_pydantic_model
-    keys = asyncio.run(get_str_keys(Product))
+    keys = asyncio.run(get_primitive_keys(Product))
     for key in ["product_id", "name", "price"]:
         assert key in keys
     assert "items" not in keys
@@ -272,9 +272,9 @@ def test_get_queries_pydantic(product_pydantic_model):
 
 def test_replaced_str_keys_pydantic(profile_with_all_types_pydantic):
     Profile = profile_with_all_types_pydantic
-    from struct_strm.tree_queries import get_str_keys
+    from struct_strm.tree_queries import get_primitive_keys
     
-    keys = asyncio.run(get_str_keys(Profile))
+    keys = asyncio.run(get_primitive_keys(Profile))
     
     # Assert that all primitive types are found
     for key in ["name", "age", "is_active", "score"]:
