@@ -1,7 +1,6 @@
 from typing import Any, get_origin, get_args, Union
 from dataclasses import is_dataclass
 from struct_strm.compat import BaseModel, HAS_PYDANTIC, is_pydantic_model
-import inspect 
 
 
 import logging
@@ -38,7 +37,7 @@ _logger = logging.getLogger(__name__)
 # A set of supported primitive types
 PRIMITIVE_TYPES = {str, int, float, bool}
 
-async def get_primitive_keys(StreamedStruct: type[Any]) -> list[str]:
+async def get_str_keys(StreamedStruct: type[Any]) -> list[str]:
     l1_fields = []
     #Added as primitive dtypes 
 
@@ -136,7 +135,7 @@ async def get_array_keys(
             # get the key for the inner class (prob need to iterate for multiple keys)
             if inner_cls is None:
                 raise ValueError("nested classes must be structs")
-            inner_keys: list[str] = await get_primitive_keys(inner_cls)
+            inner_keys: list[str] = await get_str_keys(inner_cls)
             if isinstance(inner_cls, type) and (
                 is_pydantic_model(inner_cls) or is_dataclass(inner_cls)
             ):
@@ -147,7 +146,7 @@ async def get_array_keys(
 
 async def get_query_l1(StreamedStruct: type[Any]) -> str:
 
-    top_keys = await get_primitive_keys(StreamedStruct)
+    top_keys = await get_str_keys(StreamedStruct)
     top_keys_formatted = [f'"\\"{key}\\""' for key in top_keys]
     top_keys_str = " ".join(top_keys_formatted)
     query_str = f"""(
@@ -167,7 +166,7 @@ async def get_query_l2(
     # will revisit in the future, but I think that's all I need
     # return in format - {"struct_key_01": query_01, "struct_key_02": query_02}
     queries = {}
-    top_keys = await get_primitive_keys(StreamedStruct)
+    top_keys = await get_str_keys(StreamedStruct)
     filter_keys_str = ""
 
     if top_keys != []:
@@ -214,7 +213,7 @@ async def get_queries(
     # check l1 and l2 keys
 
     # if has no l1 keys then we can skip
-    has_l1_key = await get_primitive_keys(StreamedStruct) != []
+    has_l1_key = await get_str_keys(StreamedStruct) != []
     # need to check for nested structures
     has_l2_key = await has_nested_structure(StreamedStruct)
 

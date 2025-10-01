@@ -133,12 +133,13 @@ async def test_parse_list_json_dataclass():
 async def test_parse_json_with_multiple_types():
     
     # 1. Define the model with multiple primitive types
+    # AFTER (This is the fix)
     class ProfileWithTypes(BaseModel):
-        name: str
-        age: int
-        is_active: bool
-        score: float
-        notes: str | None
+        name: str = ""
+        age: int = 0
+        is_active: bool = False
+        score: float = 0.0
+        notes: str | None = None
 
     # 2. Define a function to simulate the stream of JSON chunks
     async def simulate_stream():
