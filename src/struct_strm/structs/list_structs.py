@@ -6,28 +6,28 @@ from dataclasses import dataclass, field
 from struct_strm.compat import to_json
 
 
-class DefaultListItem(BaseModel):
+class PydanticDefaultListItem(BaseModel):
     item: str = ""
 
 
-class DefaultListStruct(BaseModel):
+class PydanticDefaultListStruct(BaseModel):
     # mostly just for testing
     items: list[DefaultListItem] = []
     # ex: itesms=[{"item": "apple orange"}, {"item2": "banana kiwi grape"}, {"item3": "mango pineapple"}]
 
 
 @dataclass
-class DefaultListItemDC:
+class DataclassDefaultListItemDC:
     item: str = ""
 
 
 @dataclass
-class DefaultListStructDC:
+class DataclassDefaultListStructDC:
     items: list[DefaultListItemDC] = field(default_factory=lambda: [])
 
 
 @dataclass
-class DefaultListDataclass:
+class DataclassDefaultListDataclass:
     items: list[DefaultListItem] = field(default_factory=lambda: [])
 
 

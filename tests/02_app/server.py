@@ -39,7 +39,7 @@ async def home(request: Request) -> HTMLResponse:
     return response
 
 
-class HealthCheck(BaseModel):
+class PydanticHealthCheck(BaseModel):
     status: str = "OK"
 
 

@@ -29,7 +29,7 @@ _logger = logging.getLogger(__name__)
 
 
 @dataclass
-class AbstractComponent(ABC):
+class DataclassAbstractComponent(ABC):
     """
     Components may have 3 stages -
     1. pre llm response placeholder rendering
@@ -59,7 +59,7 @@ class AbstractComponent(ABC):
 
 
 @dataclass
-class ListComponent(AbstractComponent):
+class DataclassListComponent(AbstractComponent):
     # mostly just a simple example for testing
     items: List[str] = field(default_factory=list)
     # default_struct: ListStruct = field(default_factory=ListStruct)
@@ -114,7 +114,7 @@ class ListComponent(AbstractComponent):
 
 
 @dataclass
-class FormComponent(AbstractComponent):
+class DataclassFormComponent(AbstractComponent):
     form: List[Dict[str, str]] = field(default_factory=list)
     output: str = field(default="html")  # either output html or incremental json
 
@@ -167,7 +167,7 @@ class FormComponent(AbstractComponent):
 
 
 @dataclass
-class TableComponent(AbstractComponent):
+class DataclassTableComponent(AbstractComponent):
     table: List[Dict[str, str]] = field(default_factory=list)
     output: str = field(default="html")  # either output html or incremental json
 
@@ -226,7 +226,7 @@ class TableComponent(AbstractComponent):
 
 
 @dataclass
-class RubricComponent(AbstractComponent):
+class DataclassRubricComponent(AbstractComponent):
     rubric_keys: list[str] = field(default_factory=list)
     rubric_criteria: list[str] = field(default_factory=list)
     rubric_rows_outlined: list[tuple[str]] = field(default_factory=list)
