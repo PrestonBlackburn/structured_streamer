@@ -5,13 +5,13 @@ from dataclasses import dataclass, field
 from struct_strm.compat import to_json
 
 
-class ExampleRow(BaseModel):
+class PydanticExampleRow(BaseModel):
     title: str = ""
     genre: str = ""
     rating: str = ""
 
 
-class ExampleTableStruct(BaseModel):
+class PydanticExampleTableStruct(BaseModel):
     # mostly just for testing
     table: List[ExampleRow] = []
     # ex: table =  [

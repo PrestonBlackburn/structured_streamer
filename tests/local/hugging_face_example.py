@@ -92,7 +92,7 @@ async def test_hf_stream(
 
 if __name__ == "__main__":
     
-    class TestPerson(BaseModel):
+    class PydanticTestPerson(BaseModel):
         name: str = ""
         age: str = ""
 

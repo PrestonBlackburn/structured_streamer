@@ -10,17 +10,17 @@ from struct_strm.compat import to_json
 # This is actually a 2 parter, since we need to do one generation after another - will need another approach
 
 
-class DefaultCriteria(BaseModel):
+class PydanticDefaultCriteria(BaseModel):
     # "Y"
     criteria_value: str = ""
 
 
-class DefaultCategory(BaseModel):
+class PydanticDefaultCategory(BaseModel):
     # "X"
     category_value: str = ""
 
 
-class DefaultOutlineRubric(BaseModel):
+class PydanticDefaultOutlineRubric(BaseModel):
     category: list[DefaultCategory] = []
     criteria: list[DefaultCriteria] = []
 
@@ -64,26 +64,26 @@ def create_rubric_enums(
         type=str,
     )
 
-    class ScopedRubricCell(BaseModel):
+    class PydanticScopedRubricCell(BaseModel):
         criteria: criteria_enum_cls
         category: category_enum_cls
         content: str
 
-    class ScopedDefaultRubric(BaseModel):
+    class PydanticScopedDefaultRubric(BaseModel):
         cells: list[ScopedRubricCell] = []
 
     return ScopedDefaultRubric
 
 
 # we don't need to restrict the response since it is alredy being restricted upstream
-class DefaultCell(BaseModel):
+class PydanticDefaultCell(BaseModel):
     # criteria and category must be enums
     category: str = ""
     criteria: str = ""
     content: str = ""
 
 
-class DefaultRubric(BaseModel):
+class PydanticDefaultRubric(BaseModel):
     cells: list[DefaultCell] = []
 
 

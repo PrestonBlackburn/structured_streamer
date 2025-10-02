@@ -52,11 +52,11 @@ from openai import AsyncOpenAI
 
 ...
 
-class DefaultFormItem(BaseModel):
+class PydanticDefaultFormItem(BaseModel):
     field_name: str = ""
     field_placeholder: str = ""
 
-class DefaultFormStruct(BaseModel):
+class PydanticDefaultFormStruct(BaseModel):
     form_fields: List[DefaultFormItem] = []
 
 

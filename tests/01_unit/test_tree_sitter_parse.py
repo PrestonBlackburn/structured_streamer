@@ -106,11 +106,11 @@ async def test_parse_table_json_pydantic():
 @pytest.mark.asyncio
 async def test_parse_list_json_dataclass():
     @dataclass
-    class ListItem:
+    class DataclassListItem:
         item: str = ""
 
     @dataclass
-    class ListStruct:
+    class DataclassListStruct:
         items: list[ListItem] = field(default_factory=lambda: [])
 
     stream = simulate_stream_list_struct()
@@ -134,7 +134,7 @@ async def test_parse_json_with_multiple_types():
     
     # 1. Define the model with multiple primitive types
     # AFTER (This is the fix)
-    class ProfileWithTypes(BaseModel):
+    class PydanticProfileWithTypes(BaseModel):
         name: str = ""
         age: int = 0
         is_active: bool = False

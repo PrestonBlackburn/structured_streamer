@@ -15,7 +15,7 @@ from typing import Any
 @pytest.fixture
 def item_dataclass():
     @dataclass
-    class Item:
+    class DataclassItem:
         sku: str = ""
 
     return Item
@@ -23,7 +23,7 @@ def item_dataclass():
 
 @pytest.fixture
 def item_pydantic_model():
-    class Item(BaseModel):
+    class PydanticItem(BaseModel):
         sku: str = ""
 
     return Item
@@ -34,7 +34,7 @@ def product_dataclass(item_dataclass):
     Item: type[Any] = item_dataclass
 
     @dataclass
-    class Product:
+    class DataclassProduct:
         product_id: str = ""
         name: str = ""
         price: str = ""
@@ -47,7 +47,7 @@ def product_dataclass(item_dataclass):
 def product_pydantic_model(item_pydantic_model):
     Item: BaseModel = item_pydantic_model
 
-    class Product(BaseModel):
+    class PydanticProduct(BaseModel):
         product_id: str = ""
         name: str = ""
         price: str = ""
@@ -57,7 +57,7 @@ def product_pydantic_model(item_pydantic_model):
 
 @pytest.fixture
 def profile_with_all_types_pydantic():
-    class Profile(BaseModel):
+    class PydanticProfile(BaseModel):
         name: str
         age: int
         is_active: bool

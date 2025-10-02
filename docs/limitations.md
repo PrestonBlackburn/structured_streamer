@@ -4,53 +4,53 @@ There are still many limiations for the parsing that I'm working to address. The
 ### 1. Only flat structs, or structs with up to one nextested level are supported  
 Suported:
 ```python
-class DefaultListItem(BaseModel):
+class PydanticDefaultListItem(BaseModel):
     item: str = ""
 
 
-class DefaultListStruct(BaseModel):
+class PydanticDefaultListStruct(BaseModel):
     # mostly just for testing
     items: list[DefaultListItem] = []
 ```
 Not supported yet:  
 ```python
-class DefaultListItemDetail(BaseModel):
+class PydanticDefaultListItemDetail(BaseModel):
     detail: str = ""
 
-class DefaultListItem(BaseModel):
+class PydanticDefaultListItem(BaseModel):
     item: DefaultListItemDetail = ""
 
-class DefaultListStruct(BaseModel):
+class PydanticDefaultListStruct(BaseModel):
     # mostly just for testing
     items: list[DefaultListItem] = []
 ```
 ### 2. I'm not handling any data types beyond strings and arrays (no ints/floats or optional types)  
 Suported:  
 ```python
-class DefaultListItem(BaseModel):
+class PydanticDefaultListItem(BaseModel):
     item: str = ""
 ```
 Not supported yet:
 ```python
-class DefaultListItem(BaseModel):
+class PydanticDefaultListItem(BaseModel):
     item: int = ""
 ```
 ### 3. Nested structures must have different value names  
 Suported:
 ```python
-class DefaultListItem(BaseModel):
+class PydanticDefaultListItem(BaseModel):
     item: str = ""
 
-class DefaultListStruct(BaseModel):
+class PydanticDefaultListStruct(BaseModel):
     # mostly just for testing
     items: list[DefaultListItem] = []
 ```
 Not supported yet:
 ```python
-class DefaultListItem(BaseModel):
+class PydanticDefaultListItem(BaseModel):
     items: str = ""
 
-class DefaultListStruct(BaseModel):
+class PydanticDefaultListStruct(BaseModel):
     # mostly just for testing
     items: list[DefaultListItem] = []
 ```
