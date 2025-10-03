@@ -1,0 +1,13 @@
+tree_sitter_json-0.24.8.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+tree_sitter_json-0.24.8.dist-info/LICENSE,sha256=LgEQ4Hq-98JUiybsnWlpd1YXylOaDcjb7rFNZFLHEdE,1080
+tree_sitter_json-0.24.8.dist-info/METADATA,sha256=xjsFIgRDNWbMASDJT7TjAF1ceuULk7BFNG1awnMgaPw,1745
+tree_sitter_json-0.24.8.dist-info/RECORD,,
+tree_sitter_json-0.24.8.dist-info/WHEEL,sha256=l0STrfPlEhKp2Oy3Nx0ZvGaD0HYE7fQA3lcI6qYo3QE,99
+tree_sitter_json-0.24.8.dist-info/top_level.txt,sha256=wDxuyZKRmX8Bz7gb4g__Z1jHp_XoFmRsR8sGn0f9gJo,26
+tree_sitter_json/__init__.py,sha256=EhCgpgmLkj_pXI7TST7pqFQd-p9ZWR3fF-AC-iRBlck,720
+tree_sitter_json/__init__.pyi,sha256=BjUNGj0SDvRXiCsYuZOKhBWynroI8AhIq5fnsyY2m-o,86
+tree_sitter_json/__pycache__/__init__.cpython-312.pyc,,
+tree_sitter_json/_binding.pyd,sha256=WldxilSt_v0IRfavIZaMdZbJdI4gRUnAVZHKL8OaYM0,15872
+tree_sitter_json/binding.c,sha256=0mx-paxqKA-u-b7nKMvmb2HggGzTMOgav60-Uzl6gP0,679
+tree_sitter_json/py.typed,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+tree_sitter_json/queries/highlights.scm,sha256=BRFSRGW1au0SJYB5IlTmi2q7v95xGfHQKxNay-J4Iz8,172

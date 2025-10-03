@@ -16,6 +16,7 @@ from struct_strm.structs.table_structs import (
     ExampleTableStruct,
 )
 from struct_strm.structs.rubric_structs import DefaultOutlineRubric, DefaultRubric
+from struct_strm.structs.switch_structs import DefaultSwitchState
 from struct_strm.template import template
 from struct_strm.partial_parser import (
     tree_sitter_parse,
@@ -373,5 +374,57 @@ class RubricComponent(AbstractComponent):
         ):
             yield item
             await asyncio.sleep(0.0001)
+        async for item in self.complete_render(**kwargs):
+            yield item
+
+
+@dataclass
+class SwitchComponent(AbstractComponent):
+    state: str = field(default="off")
+    label: str = field(default="Enable setting")
+    output: str = field(default="html")
+
+    async def placeholder_render(self, **kwargs) -> AsyncGenerator[str, None]:
+        placeholder_template = template("switch/switch_placeholder.html")
+        template_wrapper = template("switch/switch_container.html")
+        component_html = placeholder_template.render()
+        yield template_wrapper.render(switch_content=component_html)
+
+    async def partial_render(
+        self,
+        response_stream: AsyncGenerator[str, None],
+        SwitchType=DefaultSwitchState,
+        **kwargs,
+    ) -> AsyncGenerator[str, None]:
+        partial_template = template("switch/switch_partial.html")
+        template_wrapper = template("switch/switch_container.html")
+
+        switch_state_response: AsyncGenerator = tree_sitter_parse(
+            SwitchType,
+            response_stream,
+        )
+
+        async for streamed_state in switch_state_response:
+            # streamed_state is a DefaultSwitchState
+            if getattr(streamed_state, "state", None):
+                self.state = streamed_state.state
+            if getattr(streamed_state, "label", None):
+                self.label = streamed_state.label
+            partial_html = partial_template.render(state=self.state, label=self.label)
+            yield template_wrapper.render(switch_content=partial_html)
+
+    async def complete_render(self, **kwargs) -> AsyncGenerator[str, None]:
+        complete_template = template("switch/switch_complete.html")
+        yield complete_template.render(state=self.state, label=self.label)
+
+    async def render(
+        self, response_stream: AsyncGenerator[str, None], **kwargs
+    ) -> AsyncGenerator[str, None]:
+        async for item in self.placeholder_render(**kwargs):
+            yield item
+            await asyncio.sleep(0.25)
+        async for item in self.partial_render(response_stream, **kwargs):
+            yield item
+            await asyncio.sleep(0.05)
         async for item in self.complete_render(**kwargs):
             yield item

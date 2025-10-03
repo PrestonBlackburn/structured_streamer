@@ -1,0 +1,10 @@
+<div class="flex items-center space-x-3">
+  <span class="text-sm text-gray-700">{{ label }}</span>
+  <button id="switch-complete"
+          aria-pressed="{{ 'true' if state == 'on' else 'false' }}"
+          class="relative inline-flex h-6 w-11 items-center rounded-full transition {{ 'bg-green-500' if state == 'on' else 'bg-gray-300' }}">
+    <span class="inline-block h-4 w-4 transform rounded-full bg-white transition {{ 'translate-x-6' if state == 'on' else 'translate-x-1' }}"></span>
+  </button>
+</div>
+
+
