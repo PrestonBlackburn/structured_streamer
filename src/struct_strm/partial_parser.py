@@ -1,6 +1,6 @@
 import tree_sitter_json as ts_json
 from tree_sitter import Language, Parser, Query, QueryCursor
-from struct_strm.tree_queries import get_queries, get_str_keys
+from struct_strm.tree_queries import get_queries, get_primitive_keys
 from struct_strm.llm_response_handler import openai_chunk_handler, ContinueSignal
 from typing import AsyncGenerator, Any, Union
 import logging
@@ -98,7 +98,7 @@ async def parse_query_matches_list_partial(
 
     results = []
     result_idx = -1
-    num_elements = await get_str_keys(nested_cls)
+    num_elements = await get_primitive_keys(nested_cls)
     num_elements = len(num_elements)
     group_num = 0
     # the problem is we are going to get a flat list here, should be in order by bytes?
