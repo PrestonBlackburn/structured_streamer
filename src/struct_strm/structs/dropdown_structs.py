@@ -38,16 +38,15 @@ async def simulate_stream_dropdown(
     if struct_type == "pydantic":
         dd = DefaultDropdown(
             dropdown_label="Select an option",
-            selected="opt_b",
             options=[
                 DropdownOption(value="opt_a", label="Option A"),
                 DropdownOption(value="opt_b", label="Option B"),
+                DropdownOption(value="opt_c", label="Option C"),
             ],
         )
     elif struct_type == "dataclass":
         dd = DataclassDefaultDropdown(
             label="Select an option",
-            selected="opt_b",
             options=[
                 DataclassDropdownOption(value="opt_a", label="Option A"),
                 DataclassDropdownOption(value="opt_b", label="Option B"),

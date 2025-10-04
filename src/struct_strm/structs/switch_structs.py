@@ -8,13 +8,13 @@ from struct_strm.compat import to_json
 class DefaultSwitchState(BaseModel):
     # Use strings for parser compatibility ("on"/"off")
     state: str = "off"
-    label: str = "Enable setting"
+    label: str = "Enable switch"
 
 
 @dataclass
 class DataclassDefaultSwitchState:
     state: str = "off"
-    label: str = "Enable setting"
+    label: str = "Enable switch"
 
 
 async def simulate_stream_switch_state(
@@ -22,9 +22,9 @@ async def simulate_stream_switch_state(
 ) -> AsyncGenerator[str, None]:
 
     if struct_type == "pydantic":
-        model = DefaultSwitchState(state="on", label="Enable setting")
+        model = DefaultSwitchState(state="off", label="Enable switch")
     elif struct_type == "dataclass":
-        model = DataclassDefaultSwitchState(state="on", label="Enable setting")
+        model = DataclassDefaultSwitchState(state="off", label="Enable switch")
     else:
         raise ValueError(f"Invalid struct type: {struct_type}")
 
@@ -59,7 +59,7 @@ async def simulate_stream_switch_openai(
         "label",
         '":"',
         "Enable",
-        " setting",
+        " switch",
         '"',
         "}",
     ]

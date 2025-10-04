@@ -158,9 +158,10 @@ class DropdownComponent(AbstractComponent):
 
     async def complete_render(self, **kwargs) -> AsyncGenerator[str, None]:
         complete_template = template("dropdown/dropdown_complete.html")
-        yield complete_template.render(
+        template_wrapper = template("dropdown/dropdown_container.html")
+        yield template_wrapper.render(dropdown_content=complete_template.render(
             options=self.options, selected=self.selected, label=self.label
-        )
+        ))
 
     async def render(
         self, response_stream: AsyncGenerator[str, None], **kwargs
@@ -476,7 +477,8 @@ class SwitchComponent(AbstractComponent):
 
     async def complete_render(self, **kwargs) -> AsyncGenerator[str, None]:
         complete_template = template("switch/switch_complete.html")
-        yield complete_template.render(state=self.state, label=self.label)
+        template_wrapper = template("switch/switch_container.html")
+        yield template_wrapper.render(switch_content=complete_template.render(state=self.state, label=self.label))
 
     async def render(
         self, response_stream: AsyncGenerator[str, None], **kwargs

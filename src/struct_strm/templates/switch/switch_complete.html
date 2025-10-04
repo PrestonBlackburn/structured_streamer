@@ -7,4 +7,42 @@
   </button>
 </div>
 
+<script>
+  (function() {
+    const switchBtn = document.getElementById('switch-complete');
+    if (!switchBtn) return; // Exit if element doesn't exist
+    
+    function toggleSwitch() {
+      const isPressed = switchBtn.getAttribute('aria-pressed') === 'true';
+      const newState = !isPressed;
+      switchBtn.setAttribute('aria-pressed', newState);
+      
+      switchBtn.classList.toggle('bg-gray-300');
+      switchBtn.classList.toggle('bg-green-500');
+      
+      const circle = switchBtn.querySelector('span');
+      circle.classList.toggle('translate-x-1');
+      circle.classList.toggle('translate-x-6');
+      
+      console.log('Switch is:', newState ? 'ON' : 'OFF');
+      return newState;
+    }
+    
+    function setSwitch(state) {
+      const isPressed = switchBtn.getAttribute('aria-pressed') === 'true';
+      const targetState = state === 'on' || state === true;
+      
+      if (isPressed !== targetState) {
+        toggleSwitch();
+      }
+    }
+    
+    // Store functions globally if you need to call them from outside
+    window.toggleSwitch = toggleSwitch;
+    window.setSwitch = setSwitch;
+
+    switchBtn.addEventListener('click', toggleSwitch);
+  })();
+</script>
+
 
