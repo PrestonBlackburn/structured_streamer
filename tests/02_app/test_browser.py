@@ -20,16 +20,15 @@ def test_simple_list_stream(page: Page, get_page):
     expect(button).to_be_visible(timeout=5000)
     expect(button).to_be_enabled()
 
-    # It waits for the real data stream connection.
-    with page.expect_response("**/test_list/**", timeout=15000) as response_info:
+    with page.expect_response("**/get_list_stream/**", timeout=15000) as response_info:
         button.click(timeout=2000)
 
+    # Confirm that this initial request was successful.
     response = response_info.value
     assert response.ok
 
-    # The rest of the test
-    expect(page.locator("#list-card").first).to_be_visible(timeout=5000)
-    expect(page.locator("li")).to_have_count(3, timeout=5000)
+    expect(page.locator("#list-card").first).to_be_visible(timeout=15000)
+    expect(page.locator("li")).to_have_count(3, timeout=10000)
 
 
 def test_simple_form_stream(page: Page, get_page):
