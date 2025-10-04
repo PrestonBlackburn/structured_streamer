@@ -10,6 +10,8 @@ from struct_strm.ui_components import (
     FormComponent, 
     TableComponent,
     RubricComponent,
+    DropdownComponent,
+    SwitchComponent,
 )
 
 from struct_strm.structs.list_structs import simulate_stream_list_struct
@@ -20,7 +22,8 @@ from struct_strm.structs.form_structs import (
 
 from struct_strm.structs.rubric_structs import simulate_stream_rubric_outline_struct, simulate_stream_rubric_final_struct
 from struct_strm.structs.table_structs import simulate_stream_table_struct
-
+from struct_strm.structs.dropdown_structs import simulate_stream_dropdown
+from struct_strm.structs.switch_structs import simulate_stream_switch_state
 from fastapi import FastAPI, Request, status
 from fastapi.responses import StreamingResponse, HTMLResponse
 from sse_starlette.sse import EventSourceResponse
@@ -325,6 +328,93 @@ async def test_rubric():
     stream: AsyncGenerator = simulate_stream_rubric_outline_struct(interval_sec=0.02)
     chained_stream: AsyncGenerator = simulate_stream_rubric_final_struct(interval_sec=0.00002)
     html_component_stream: AsyncGenerator = component.render(stream, chained_stream)
+
+    async def wrapper():
+        async for item in html_component_stream:
+            print(item)
+            yield item
+        yield {"event": "streamCompleted", "data": ""}
+
+    return EventSourceResponse(wrapper(), media_type="text/event-stream")
+    # return  StreamingResponse(html_component_stream, media_type="text/html")
+
+
+# ----------------------------------------------------
+# ------------------- Test Dropdown --------------------
+# ----------------------------------------------------
+
+@app.get("/get_dropdown_stream")
+def test_fetch_dropdown_sse():
+    # kick off SSE stream
+    sse_container = "sse-dropdown"
+    stream_target = "stream-dropdown"
+    component_path = "/test_dropdown"
+    sse_html = f"""<div 
+         id="sse-dropdown-container"
+         hx-ext="sse"
+         sse-connect="{component_path}">
+            <div 
+                sse-swap="message" 
+                hx-target="#{stream_target}" 
+                hx-swap="innerHTML">
+            </div>
+            <div
+                sse-swap="streamCompleted" 
+                hx-target="#{sse_container}">
+            </div>
+        </div>
+    """
+    return HTMLResponse(content=sse_html, media_type="text/html")
+
+@app.get("/test_dropdown")
+async def test_dropdown():
+    
+    component = DropdownComponent()
+    stream: AsyncGenerator = simulate_stream_dropdown(interval_sec=0.02)
+    html_component_stream: AsyncGenerator = component.render(stream)
+
+    async def wrapper():
+        async for item in html_component_stream:
+            print(item)
+            yield item
+        yield {"event": "streamCompleted", "data": ""}
+
+    return EventSourceResponse(wrapper(), media_type="text/event-stream")
+    # return  StreamingResponse(html_component_stream, media_type="text/html")
+
+# ----------------------------------------------------
+# ------------------- Test Switch --------------------
+# ----------------------------------------------------
+
+@app.get("/get_switch_stream")
+def test_fetch_switch_sse():
+    # kick off SSE stream
+    sse_container = "sse-switch"
+    stream_target = "stream-switch"
+    component_path = "/test_switch"
+    sse_html = f"""<div 
+         id="sse-switch-container"
+         hx-ext="sse"
+         sse-connect="{component_path}">
+            <div 
+                sse-swap="message" 
+                hx-target="#{stream_target}" 
+                hx-swap="innerHTML">
+            </div>
+            <div
+                sse-swap="streamCompleted" 
+                hx-target="#{sse_container}">
+            </div>
+        </div>
+    """
+    return HTMLResponse(content=sse_html, media_type="text/html")
+
+@app.get("/test_switch")
+async def test_switch():
+    
+    component = SwitchComponent()
+    stream: AsyncGenerator = simulate_stream_switch_state(interval_sec=0.02)
+    html_component_stream: AsyncGenerator = component.render(stream)
 
     async def wrapper():
         async for item in html_component_stream:

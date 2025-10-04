@@ -11,3 +11,4 @@ GEMINI.md
 coverage.xml
 dist/**
 /tests/profile/*.html
+.venv/

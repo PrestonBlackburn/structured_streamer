@@ -127,10 +127,36 @@
         <div id="sse-rubric"></div>
         <div id="stream-rubric"></div>
         <!-- END -Testing Basic Rubric SSE HTMX -->
+        <!-- Testing Basic Dropdown SSE HTMX -->
+        <div> Test Mock Dropdown Outline Stream HTMX </div>
+        <button
+                id="test-stream-dropdown-btn"
+                hx-get="/get_dropdown_stream"
+                hx-swap="innerHTML"
+                hx-target="#sse-dropdown"
+                class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
+            >
+            Test 
+        </button>
+        <div id="sse-dropdown"></div>
+        <div id="stream-dropdown"></div>
+        <!-- END -Testing Basic Dropdown SSE HTMX -->
 
+        <!-- Testing Basic Switch SSE HTMX -->
+        <div> Test Mock Switch Outline Stream HTMX </div>
+        <button
+                id="test-stream-switch-btn"
+                hx-get="/get_switch_stream"
+                hx-swap="innerHTML"
+                hx-target="#sse-switch"
+                class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
+            >
+            Test 
+        </button>
 
-
-        
+        <div id="sse-switch"></div>
+        <div id="stream-switch"></div>
+        <!-- END -Testing Basic Switch SSE HTMX -->
     </div>
 
 </body>
