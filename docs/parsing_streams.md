@@ -10,11 +10,11 @@ The goal of the parsing is to always output fully constructed python structures.
 
 In the trivial case of a structured list, the structures may look like:
 ```python
-class DefaultListItem(BaseModel):
+class PydanticDefaultListItem(BaseModel):
     item: str = ""
 
 
-class DefaultListStruct(BaseModel):
+class PydanticDefaultListStruct(BaseModel):
     # mostly just for testing
     items: list[DefaultListItem] = []
 ```

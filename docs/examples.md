@@ -11,10 +11,10 @@ from pydantic import BaseModel
 client = AsyncOpenAI(api_key="your token here")
 
 # Setup up all of the required info for the query
-class DefaultListItem(BaseModel):
+class PydanticDefaultListItem(BaseModel):
     item: str = ""
 
-class DefaultListStruct(BaseModel):
+class PydanticDefaultListStruct(BaseModel):
     # mostly just for testing
     items: list[DefaultListItem] = []
 
@@ -181,7 +181,7 @@ async def test_hf_stream(
 
 
 # run the example
-class TestPerson(BaseModel):
+class PydanticTestPerson(BaseModel):
     name: str = ""
     age: str = ""
 

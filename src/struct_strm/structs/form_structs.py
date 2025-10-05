@@ -5,12 +5,12 @@ from dataclasses import dataclass, field
 from struct_strm.compat import to_json
 
 
-class DefaultFormItem(BaseModel):
+class PydanticDefaultFormItem(BaseModel):
     field_name: str = ""
     field_placeholder: str = ""
 
 
-class DefaultFormStruct(BaseModel):
+class PydanticDefaultFormStruct(BaseModel):
     # mostly just for testing
     form_fields: List[DefaultFormItem] = []
     # ex: form_fields=[{"field_name": "fruits", "field_placeholder": "apple orange"}, {"field_name": "appliance"}, {"item3": "mango pineapple"}]

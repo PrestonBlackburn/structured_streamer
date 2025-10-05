@@ -17,10 +17,10 @@ from struct_strm import parse_openai_stream
 prompt_context = ""
 user_query = "Create list describing 5 open source llm tools"
 
-class DefaultListItem(BaseModel):
+class PydanticDefaultListItem(BaseModel):
     item: str = ""
 
-class DefaultListStruct(BaseModel):
+class PydanticDefaultListStruct(BaseModel):
     # mostly just for testing
     items: list[DefaultListItem] = []
 
