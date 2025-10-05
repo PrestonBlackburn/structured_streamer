@@ -52,7 +52,7 @@ async def simulate_stream_switch_openai(
         '{"',
         "state",
         '":"',
-        "on",
+        "off",
         '"',
         ", ",
         '"',

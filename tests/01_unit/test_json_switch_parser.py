@@ -19,8 +19,8 @@ async def test_switch_l1_parsing_pydantic_simulator():
     # Should converge to final values
     assert parsed_values, "No values parsed from stream"
     final_state, final_label = parsed_values[-1]
-    assert final_state == "on"
-    assert final_label == "Enable setting"
+    assert final_state == "off"
+    assert final_label == "Enable switch"
 
 
 @pytest.mark.asyncio
@@ -32,7 +32,7 @@ async def test_switch_l1_parsing_openai_like_tokens():
 
     assert parsed_values, "No values parsed from OpenAI-like stream"
     final_state, final_label = parsed_values[-1]
-    assert final_state == "on"
-    assert final_label == "Enable setting"
+    assert final_state == "off"
+    assert final_label == "Enable switch"
 
 
