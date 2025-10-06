@@ -1,0 +1,85 @@
+<label class="block text-sm font-medium text-gray-700 mb-1">{{ label }}</label>
+<select id="dropdown2" size="5" class="block w-full rounded border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
+  {% for opt in options %}
+    <option value="{{ opt.value }}" {% if selected == opt.value %}selected{% endif %}>
+      {{ opt.label }}
+    </option>
+  {% endfor %}
+  {% if options|length == 0 %}
+    <option disabled selected>Loading...</option>
+  {% endif %}
+</select>
+
+
+<style>
+  select {
+    /* Basic styling */
+    font-size: 14px;
+    color: #333;
+    
+    /* Spacing */
+    padding: 10px 35px 10px 12px;
+    min-width: 200px;
+    
+    /* Border and background */
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background-color: #ffffff;
+    
+    /* Cursor */
+    cursor: pointer;
+    
+    /* Transition */
+    transition: all 0.2s ease;
+}
+
+  /* Hover state */
+  select:hover {
+      border-color: #9ca3af;
+      background-color: #f9fafb;
+  }
+
+  /* Focus state */
+  select:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      background-color: #ffffff;
+  }
+
+  /* Disabled state */
+  select:disabled {
+      background-color: #f3f4f6;
+      color: #9ca3af;
+      cursor: not-allowed;
+      opacity: 0.6;
+  }
+
+  /* Option styling */
+  select option {
+      padding: 10px;
+      background-color: #ffffff;
+      color: #333;
+  }
+
+  /* For size attribute dropdowns (always open) */
+  select[size] {
+      padding: 8px;
+      background-image: none;
+  }
+
+  select[size] option {
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin: 2px 0;
+  }
+
+  select[size] option:hover {
+      background-color: #f3f4f6;
+  }
+
+  select[size] option:checked {
+      background-color: #e0e7ff;
+      color: #3730a3;
+  }
+</style>
