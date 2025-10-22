@@ -37,6 +37,19 @@ pip install struct-strm
 
 <br/>
 
+## Dependency Requirements and Comparison with Similar Libraries
+`struct-strm` is lightweight by design and has minimal dependencies compared to other structured-output libraries.
+
+**Dependencies**:
+- Requires pydantic for schema definitions.
+- Works with standard dataclasses if you prefer no external model dependency.
+- Compatible with any OpenAI/Ollama-style async streaming client.
+
+**Compared to other libraries**:
+
+- Unlike libraries such as instructor, which validate responses only after full completion, struct-strm focuses on incremental JSON streaming - making it better suited for real-time or UI-driven applications.
+- No extra heavy dependencies or post-generation validation layers - only what’s required for structured streaming.
+      
 ## Main Features
 
 The primary feature is to wrap LLM outputs to produce valid incremental JSON from partial invalid JSON based on user provided structures. Effectively this acts as a wrapper for your LLM calls. Due to the nature of this library (it is primarily inteded for use in web servers), it is expected that it will be used in async workflows, and is async first.   
