@@ -18,9 +18,12 @@ def is_pydantic_model(PydanticModel: Any) -> bool:
     if issubclass(type(PydanticModel), BaseModel):
         is_pydantic_model = True
         return is_pydantic_model
-    if issubclass(PydanticModel, BaseModel):
-        is_pydantic_model = True
-        return is_pydantic_model
+    try:
+        if issubclass(PydanticModel, BaseModel):
+            is_pydantic_model = True
+            return is_pydantic_model
+    except TypeError:
+        pass
     return is_pydantic_model
 
 
