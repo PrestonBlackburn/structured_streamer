@@ -202,84 +202,123 @@ Fully formed python classes are returned:
 This section provides a robust, working example demonstrating how to use `struct-strm` with a local Ollama server running its OpenAI-compatible API, using native **Python Dataclasses**. This approach resolves common compatibility issues by manually extracting the raw text tokens from the Ollama stream and using the generic `parse_hf_stream` wrapper.
 
 ```python
+"""
+------------------------------------------------------------
+Ollama + Llama 3 Setup (Docker)
+------------------------------------------------------------
+Run the following commands before starting this script:
+
+docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+docker exec -it ollama bash
+ollama pull llama3
+
+Notes:
+- Models persist via the "ollama" volume.
+- Ollama API runs at http://localhost:11434.
+- Replace "llama3" with another model if needed.
+------------------------------------------------------------
+"""
+
 from dataclasses import dataclass, field
 import asyncio
 from openai import AsyncOpenAI
 from struct_strm import parse_hf_stream 
-from typing import AsyncGenerator
-import json
 import sys
+import json
+from typing import AsyncGenerator
 
-# --- Configuration & Dataclass Schema Setup ---
+# --- Configuration & Client Setup ---
+
 client = AsyncOpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
 MODEL_NAME = "llama3"
 QUERY = "Create a list describing 5 open source LLM tools"
 
+# --- Dataclass Schema ---
+
 @dataclass
 class ToolItem:
-    """Represents a single tool entry."""
     name: str = field(default="")
     description: str = field(default="")
 
 @dataclass
 class ToolList:
-    """The main structure containing the list of tools."""
     tools: list[ToolItem] = field(default_factory=list)
 
-# --- Helper Functions ---
+# --- Schema & Example Setup ---
 
 def create_few_shot_json() -> str:
-    """Generates a JSON string of a few-shot example for model guidance."""
     example_instance = ToolList(
         tools=[
-            ToolItem(name="Hugging Face Transformers", description="The industry-standard Python library providing thousands of pre-trained models for NLP, Vision, and Audio tasks..."),
-            ToolItem(name="llama.cpp", description="A high-performance C/C++ inference engine for Llama and other models...")
+            ToolItem(
+                name="Hugging Face Transformers", 
+                description="The industry-standard Python library providing thousands of pre-trained models for NLP, Vision, and Audio tasks, along with simple APIs for loading and using them."
+            ),
+            ToolItem(
+                name="llama.cpp", 
+                description="A high-performance C/C++ inference engine for Llama and other models, optimized for local CPU and efficient GPU execution, often used for running models on consumer hardware."
+            )
         ]
     )
+    
     example_dict = {"tools": [{"name": item.name, "description": item.description} for item in example_instance.tools]}
     return json.dumps(example_dict, indent=2)
 
 def create_json_schema_prompt() -> str:
-    """Generates the JSON schema instruction for the system prompt."""
-    return json.dumps({"type": "object", "properties": {"tools": {"type": "array", "items": {"type": "object", "properties": {"name": {"type": "string"}, "description": {"type": "string"}}}}}}, indent=2)
+    return json.dumps({
+        "type": "object",
+        "properties": {
+            "tools": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string", "description": "The name of the open source tool."},
+                        "description": {"type": "string", "description": "A brief description of the tool."},
+                    }
+                }
+            }
+        }
+    }, indent=2)
+
+# --- Stream Processing ---
 
 async def extract_text_from_openai_stream(stream) -> AsyncGenerator[str, None]:
-    """Converts the structured OpenAI/Ollama chunk stream into a simple text token stream."""
     async for chunk in stream:
         if chunk.choices and chunk.choices[0].delta and chunk.choices[0].delta.content:
             yield chunk.choices[0].delta.content
 
-# Setup messages and initial stream generation (equivalent to the setup in the other examples)
+# --- Main Execution ---
 
-few_shot_example_json = create_few_shot_json()
-json_schema_prompt = create_json_schema_prompt()
+async def main():
+    few_shot_example_json = create_few_shot_json()
+    json_schema_prompt = create_json_schema_prompt()
+    
+    print(f"Connecting to Ollama using model: {MODEL_NAME}")
+    print(f"Query: {QUERY}\n")
+    
+    messages = [
+        {"role": "system", "content": f"You are a helpful assistant that returns ONLY a JSON object based on the following schema instruction and example. SCHEMA: {json_schema_prompt} EXAMPLE: {few_shot_example_json}"},
+        {"role": "user", "content": QUERY},
+    ]
 
-messages = [
-    {"role": "system", "content": f"You are a helpful assistant that returns ONLY a JSON object based on the following schema instruction and example. SCHEMA: {json_schema_prompt} EXAMPLE: {few_shot_example_json}"},
-    {"role": "user", "content": QUERY},
-]
+    try:
+        openai_chunk_stream = await client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=messages,
+            response_format={"type": "json_object"}, 
+            stream=True,
+        )
+    except Exception as e:
+        print(f"\n--- Connection Error (during stream initiation) ---")
+        print(f"Failed to create stream: {e}")
+        print(f"Please ensure Ollama is running and model '{MODEL_NAME}' is available.")
+        return
 
-# NOTE: The stream creation must be awaited in the main function
-openai_chunk_stream = await client.chat.completions.create(
-    model=MODEL_NAME,
-    messages=messages,
-    response_format={"type": "json_object"}, 
-    stream=True,
-)
-```
-Now that we have the raw stream, we wrap it using the custom extractor and the parse_hf_stream wrapper.
-```python
-from struct_strm import parse_hf_stream 
-import asyncio
-
-# The main function to handle the async generator output
-async def your_streamed_response_function(openai_chunk_stream, ToolList):
     raw_text_stream = extract_text_from_openai_stream(openai_chunk_stream)
     structured_updates_source = parse_hf_stream(raw_text_stream, ToolList) 
 
     print("--- Streaming Structured Output ---")
     
-    # Nested iteration is required for the specific library/environment interaction
     async for generator_wrapper in structured_updates_source: 
         async for update in generator_wrapper:
             try:
@@ -288,33 +327,40 @@ async def your_streamed_response_function(openai_chunk_stream, ToolList):
                 print("=" * 50)
                 
                 for i, raw_data in enumerate(update.tools):
-                    # Manual instantiation is required because the parser yields dictionaries
-                    tool = ToolItem(**dict(raw_data)) if isinstance(raw_data, dict) else raw_data
+                    
+                    if isinstance(raw_data, dict):
+                        tool = ToolItem(**dict(raw_data))
+                    else:
+                        tool = raw_data
 
                     name_status = tool.name if hasattr(tool, 'name') and tool.name else "(parsing name...)"
-                    desc_status = tool.description[:75].replace('\n', ' ') + "..." if hasattr(tool, 'description') and tool.description else "(parsing description...)"
+                    desc_status = tool.description if hasattr(tool, 'description') and tool.description else "(parsing description...)"
                     
                     print(f"| Tool {i+1} Name: {name_status}")
                     print(f"| Tool {i+1} Desc: {desc_status}")
                     
             except Exception as e:
-                print(f"\n--- Runtime Error during processing: {e} ---")
+                print("\n--- CRITICAL DIAGNOSTIC ERROR (Final Check) ---")
+                print(f"Error occurred while processing item {i}: {e}")
+                print(f"Type of object that failed: {type(raw_data)}")
+                print(f"The parent object was: {type(update)}")
                 return 
             
     print("\n--- Stream Complete ---")
+
+# --- Application Entrypoint ---
 
 if __name__ == "__main__":
     if 'struct_strm' not in sys.modules:
         print("Error: The 'struct_strm' library is required. Please install it with 'pip install struct-strm'")
     else:
         try:
-            # NOTE: This part requires external setup to work in a local environment.
-            # The execution logic should be adapted to the user's local context.
-            pass
+            asyncio.run(main())
         except Exception as e:
             print(f"\n--- An unexpected system error occurred ---")
             print(f"Error: {e}")
 ```
+
 When the script runs, the ToolList dataclass is updated incrementally, demonstrating real-time structured parsing.
 ```bash
 Connecting to Ollama using model: llama3
@@ -358,5 +404,18 @@ Query: Create a list describing 5 open source LLM tools
 | Tool 1 Desc: (parsing description...)
 .
 .
+==================================================
+| Update: 5 Tool(s) Parsed So Far
+==================================================
+| Tool 1 Name: Hugging Face Transformers
+| Tool 1 Desc: The industry-standard Python library providing thousands of pre-trained models for NLP, Vision, and Audio tasks, along with simple APIs for loading and using them.
+| Tool 2 Name: llama.cpp
+| Tool 2 Desc: A high-performance C/C++ inference engine for Llama and other models, optimized for local CPU and efficient GPU execution, often used for running models on consumer hardware.
+| Tool 3 Name: Optimus
+| Tool 3 Desc: An open-source Python library that generates natural language text based on a prompt using various AI algorithms, allowing developers to build robust language models and conversational interfaces.
+| Tool 4 Name: Rasa
+| Tool 4 Desc: A popular open-source natural language processing framework for building contextual chatbots and conversational interfaces, focused on integrating NLP with machine learning and business logic.
+| Tool 5 Name: Stanford CoreNLP
+| Tool 5 Desc: A robust Java library that leverages the power of machine learning models to perform various NLP tasks, such as tokenization, part-of-speech tagging, named entity recognition, and sentiment analysis.
 --- Stream Complete ---
 ```

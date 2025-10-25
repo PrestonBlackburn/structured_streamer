@@ -41,8 +41,7 @@ pip install struct-strm
 `struct-strm` is lightweight by design and has minimal dependencies compared to other structured-output libraries.
 
 **Dependencies**:
-- Requires pydantic for schema definitions.
-- Works with standard dataclasses if you prefer no external model dependency.
+- Built-in support for dataclasses — no need for Pydantic or any third-party model framework.
 - Compatible with any OpenAI/Ollama-style async streaming client.
 
 **Compared to other libraries**:
