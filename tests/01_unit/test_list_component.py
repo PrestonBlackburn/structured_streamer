@@ -1,12 +1,26 @@
 import pytest
 from struct_strm.ui_components import ListComponent
-from struct_strm.structs.list_structs import simulate_stream_list_struct
+from struct_strm.structs.list_structs import (
+    simulate_stream_list_struct,
+    simulate_stream_list_struct_dataclass,
+)
 
 
 @pytest.mark.asyncio
-async def test_list_component_partial_render():
+async def test_list_component_pydantic_partial_render():
     component = ListComponent()
     stream = simulate_stream_list_struct()
+    async for _ in component.render(response_stream=stream):
+        pass
+
+    expected_items = ["apple orange strawberry", "banana kiwi grape", "mango pineapple"]
+    assert component.items == expected_items
+
+
+@pytest.mark.asyncio
+async def test_list_component_dataclass_partial_render():
+    component = ListComponent()
+    stream = simulate_stream_list_struct_dataclass()
     async for _ in component.render(response_stream=stream):
         pass
 

@@ -24,9 +24,17 @@ jobs:
       - name: Display Python version
         run: python -c "import sys; print(sys.version)"
 
-      - name: Install Deps and test
+      - name: Install Deps
         run: | 
           pip install .[dev]
           playwright install
           playwright install-deps
-          pytest 
+
+      - name: Type Check
+        run: |
+          pyright src/struct_strm
+
+      - name: Test
+        run: |
+          pytest
+

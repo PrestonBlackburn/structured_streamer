@@ -1,0 +1,47 @@
+<div class="flex items-center space-x-3">
+  <span class="text-sm text-gray-700">{{ label }}</span>
+  <button id="switch"
+          aria-pressed="{{ 'true' if state == 'on' else 'false' }}"
+          class="relative inline-flex h-6 w-11 items-center rounded-full transition {{ 'bg-green-500' if state == 'on' else 'bg-gray-300' }}">
+    <span class="inline-block h-4 w-4 transform rounded-full bg-white transition {{ 'translate-x-6' if state == 'on' else 'translate-x-1' }}"></span>
+  </button>
+</div>
+
+<script>
+  (function() {
+    const switchBtn = document.getElementById('switch-complete');
+    if (!switchBtn) return; // Exit if element doesn't exist
+    
+    function toggleSwitch() {
+      const isPressed = switchBtn.getAttribute('aria-pressed') === 'true';
+      const newState = !isPressed;
+      switchBtn.setAttribute('aria-pressed', newState);
+      
+      switchBtn.classList.toggle('bg-gray-300');
+      switchBtn.classList.toggle('bg-green-500');
+      
+      const circle = switchBtn.querySelector('span');
+      circle.classList.toggle('translate-x-1');
+      circle.classList.toggle('translate-x-6');
+      
+      console.log('Switch is:', newState ? 'ON' : 'OFF');
+      return newState;
+    }
+    
+    function setSwitch(state) {
+      const isPressed = switchBtn.getAttribute('aria-pressed') === 'true';
+      const targetState = state === 'on' || state === true;
+      
+      if (isPressed !== targetState) {
+        toggleSwitch();
+      }
+    }
+    
+    // Store functions globally if you need to call them from outside
+    window.toggleSwitch = toggleSwitch;
+    window.setSwitch = setSwitch;
+    
+    switchBtn.addEventListener('click', toggleSwitch);
+  })();
+</script>
+

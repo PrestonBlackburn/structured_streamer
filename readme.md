@@ -3,12 +3,17 @@
 
 <img src="https://raw.githubusercontent.com/PrestonBlackburn/structured_streamer/refs/heads/gh-pages/img/logo_bg_wide.png" alt="Struct Strm Logo" width="750" role="img">
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/PrestonBlackburn/structured_streamer/blob/main/LICENSE)
-[![Codestyle Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-![Build Status](https://github.com/PrestonBlackburn/structured_streamer/actions/workflows/build_and_publish.yaml/badge.svg?branch=main)
-![Coverage](https://PrestonBlackburn.github.io/structured_streamer/assets/coverage.svg)
+| | |
+| --- | --- |
+| CI/CD | [![CI - Test](https://github.com/PrestonBlackburn/structured_streamer/actions/workflows/test_versions.yaml/badge.svg)](https://github.com/PrestonBlackburn/structured_streamer/actions/workflows/test_versions.yaml) [![CI - Build](https://github.com/PrestonBlackburn/structured_streamer/actions/workflows/release.yaml/badge.svg)](https://github.com/PrestonBlackburn/structured_streamer/actions/workflows/release.yaml)| 
+| Package | [![PyPI - Version](https://img.shields.io/pypi/v/struct-strm.svg?logo=pypi&label=PyPI&logoColor=gold)](https://pypi.org/project/struct-strm/) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/struct-strm.svg?logo=python&label=Python&logoColor=gold)](https://pypi.org/project/struct-strm/) |
+| Meta | [![Codestyle - Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/PrestonBlackburn/structured_streamer/blob/main/LICENSE) ![Coverage](https://PrestonBlackburn.github.io/structured_streamer/assets/coverage.svg)
+
 
 </div>
+
+<br/>
+
 
 # Structured Streamer
 
@@ -17,6 +22,7 @@
 ## Why Use Structured Streamer?
 
 JSON format is the standard when dealing with structured responses from LLMs. In the early days of LLM structured generation we had to validate the JSON response only after the whole JSON response had been returned. Modern approaches use constrained decoding to ensure that only valid json is returned, eliminating the need for post generation validation, and allowing us to use the response imediately. However, the streamed json response is incomplete, so it can't be parsed using traditional methods. This library aims to make it easier to handle this partially generated json to provide a better end user experience.   
+See the [benchmarks](./benchmarks.md) section in the docs for more details about how this library can speed up your structured response processing. 
 
 <br/>
 
@@ -31,6 +37,18 @@ pip install struct-strm
 
 <br/>
 
+## Dependency Requirements and Comparison with Similar Libraries
+`struct-strm` is lightweight by design and has minimal dependencies compared to other structured-output libraries.
+
+**Dependencies**:
+- Built-in support for dataclasses — no need for Pydantic or any third-party model framework.
+- Compatible with any OpenAI/Ollama-style async streaming client.
+
+**Compared to other libraries**:
+
+- Unlike libraries such as instructor, which validate responses only after full completion, struct-strm focuses on incremental JSON streaming - making it better suited for real-time or UI-driven applications.
+- No extra heavy dependencies or post-generation validation layers - only what’s required for structured streaming.
+      
 ## Main Features
 
 The primary feature is to wrap LLM outputs to produce valid incremental JSON from partial invalid JSON based on user provided structures. Effectively this acts as a wrapper for your LLM calls. Due to the nature of this library (it is primarily inteded for use in web servers), it is expected that it will be used in async workflows, and is async first.   
@@ -46,6 +64,7 @@ Due to the nature of partial json streaming, there can be "wrong" ways to stream
 
 ## Example Component
 This is an example of a form component being incrementally rendered. By using a structured query response from an LLM, in this case a form with form field names and field placeholders, we can stream the form results directly to a HTML component. This drastically reduces the time to first token, and the precieved time that a user needs to wait. More advanced components are under development. 
+
 
 ```python
 from stuct_strm import parse_openai
@@ -94,10 +113,16 @@ And the corresponding incomplete json string streams would have looked like:
 
 ### Component Streaming
 The structured responses can then be easily used to generate incrementally rendered web components.  
-For example this form:  
+For example this form:   
 
 ![Example Form Streaming](https://raw.githubusercontent.com/PrestonBlackburn/structured_streamer/refs/heads/main/docs/img/form_struct_strm.gif)
 
+<br/>
+
+Or we can return data in a grid in more interesting ways.  
+For example this rubric:   
+
+![Example Rubric Streaming](https://raw.githubusercontent.com/PrestonBlackburn/structured_streamer/refs/heads/main/docs/img/rubric_example.gif)
 
 ## Other
 

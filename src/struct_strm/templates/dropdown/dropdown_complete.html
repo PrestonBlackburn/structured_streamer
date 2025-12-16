@@ -1,0 +1,94 @@
+<div id="dd-card" class="relative max-w-sm mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl m-4 bg-[linear-gradient(45deg,transparent_25%,rgba(246,230,59,.6)_50%,transparent_75%,transparent_100%)] bg-[length:250%_250%,100%_100%] bg-no-repeat">
+  <div class="p-8 flex items-center justify-center">
+    <label class="block text-sm font-medium text-gray-700 mb-1">{{ label }}</label>
+    <select class="block w-full rounded border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
+      {% for opt in options %}
+        <option value="{{ opt.value }}" {% if selected == opt.value %}selected{% endif %}>
+          {{ opt.label }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+
+<style>
+  select {
+    /* Basic styling */
+    font-size: 14px;
+    color: #333;
+    
+    /* Spacing */
+    padding: 10px 35px 10px 12px;
+    min-width: 200px;
+    
+    /* Border and background */
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background-color: #ffffff;
+    
+    /* Cursor */
+    cursor: pointer;
+    
+    /* Transition */
+    transition: all 0.2s ease;
+}
+
+  /* Hover state */
+  select:hover {
+      border-color: #9ca3af;
+      background-color: #f9fafb;
+  }
+
+  /* Focus state */
+  select:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      background-color: #ffffff;
+  }
+
+  /* Disabled state */
+  select:disabled {
+      background-color: #f3f4f6;
+      color: #9ca3af;
+      cursor: not-allowed;
+      opacity: 0.6;
+  }
+
+  /* Option styling */
+  select option {
+      padding: 10px;
+      background-color: #ffffff;
+      color: #333;
+  }
+  
+  #dd-card {
+      background-position: -100% 0, 0 0;
+      transition: background-position 1.5s ease-out;
+  }
+  #dd-card.shine-effect {
+      background-position: 200% 0, 0 0;
+  }
+  </style>
+
+<script>
+  function card_shine(elementId) {
+      const card = document.getElementById(elementId);
+      if (card) {
+          // Use a timeout to ensure the initial state is rendered before applying the animation class
+          setTimeout(function() {
+              card.classList.add('shine-effect');
+          }, 250);
+  
+          // Optional: remove the class after animation to clean up
+          card.addEventListener('transitionend', () => {
+              card.classList.remove('shine-effect');
+              // To prevent re-triggering, we can also reset the transition property
+              card.style.transition = 'none';
+          }, { once: true });
+      }
+  };
+  card_shine('dd-card');
+  </script>
+
+

@@ -1,7 +1,19 @@
 from abc import ABC, abstractmethod
 import asyncio
 from dataclasses import dataclass, field
-from typing import Generator, List, AsyncGenerator, Dict
+from typing import Generator, List, AsyncGenerator, Dict, Any
+from types import CoroutineType
+import logging
+
+_logger = logging.getLogger(__name__)
+
+try:
+    from pydantic import BaseModel
+    HAS_PYDANTIC = True
+except Exception as e:
+    _logger.warning(f"Warning: Pydantic Not Installed, some example features may be univailable.")
+    HAS_PYDANTIC = False
+
 from struct_strm.structs.list_structs import (
     DefaultListStruct,
     DefaultListItem,
@@ -15,10 +27,14 @@ from struct_strm.structs.table_structs import (
     ExampleTableStruct,
 )
 from struct_strm.structs.rubric_structs import DefaultOutlineRubric, DefaultRubric
+from struct_strm.structs.switch_structs import DefaultSwitchState
+from struct_strm.structs.dropdown_structs import DefaultDropdown
+
 from struct_strm.template import template
 from struct_strm.partial_parser import (
     tree_sitter_parse,
 )
+from struct_strm.compat import to_dict
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -34,21 +50,23 @@ class AbstractComponent(ABC):
     """
 
     @abstractmethod
-    async def placeholder_render(self, **kwargs) -> Generator[str, None, None]:
+    def placeholder_render(self, **kwargs) -> AsyncGenerator[str, None]:
         pass
 
     @abstractmethod
-    async def partial_render(
-        self, response_stream: Generator[str, None, None], **kwargs
-    ) -> Generator[str, None, None]:
+    def partial_render(
+        self, response_stream: AsyncGenerator[str, None], **kwargs
+    ) -> AsyncGenerator[str, None]:
         pass
 
     @abstractmethod
-    async def complete_render(self, **kwargs) -> Generator[str, None, None]:
+    def complete_render(self, **kwargs) -> AsyncGenerator[str, None]:
         pass
 
     @abstractmethod
-    async def render(self, **kwargs) -> Generator[str, None, None]:
+    def render(
+        self, response_stream: AsyncGenerator[str, None], *args, **kwargs
+    ) -> AsyncGenerator[str, None]:
         pass
 
 
@@ -60,6 +78,7 @@ class ListComponent(AbstractComponent):
     output: str = field(default="html")  # either output html or incremental json
 
     async def placeholder_render(self, **kwargs) -> AsyncGenerator[str, None]:
+
         # fetch placeholer template
         placeholder_template = template("list/list_placeholder.html")
         template_wrapper = template("list/list_container.html")
@@ -107,6 +126,67 @@ class ListComponent(AbstractComponent):
 
 
 @dataclass
+class DropdownComponent(AbstractComponent):
+    options: List[Dict[str, str]] = field(default_factory=list)
+    selected: str = field(default="")
+    label: str = field(default="Select an option")
+    output: str = field(default="html")
+
+    async def placeholder_render(self, **kwargs) -> AsyncGenerator[str, None]:
+        placeholder_template = template("dropdown/dropdown_placeholder.html")
+        template_wrapper = template("dropdown/dropdown_container.html")
+        component_html = placeholder_template.render()
+        yield template_wrapper.render(dropdown_content=component_html)
+
+    async def partial_render(
+        self,
+        response_stream: AsyncGenerator[str, None],
+        DropdownType=DefaultDropdown,
+        **kwargs,
+    ) -> AsyncGenerator[str, None]:
+        partial_template = template("dropdown/dropdown_partial.html")
+        template_wrapper = template("dropdown/dropdown_container.html")
+
+        dropdown_response: AsyncGenerator = tree_sitter_parse(
+            DropdownType,
+            response_stream,
+        )
+
+        async for dd in dropdown_response:
+            if getattr(dd, "options", None) is not None:
+                self.options = [
+                    {"value": o.value, "label": o.label} for o in dd.options
+                ]
+            if getattr(dd, "selected", None):
+                self.selected = dd.selected
+            if getattr(dd, "dropdown_label", None):
+                self.label = dd.dropdown_label
+            partial_html = partial_template.render(
+                options=self.options, selected=self.selected, label=self.label
+            )
+            yield template_wrapper.render(dropdown_content=partial_html)
+
+    async def complete_render(self, **kwargs) -> AsyncGenerator[str, None]:
+        complete_template = template("dropdown/dropdown_complete.html")
+        template_wrapper = template("dropdown/dropdown_container.html")
+        yield template_wrapper.render(dropdown_content=complete_template.render(
+            options=self.options, selected=self.selected, label=self.label
+        ))
+
+    async def render(
+        self, response_stream: AsyncGenerator[str, None], **kwargs
+    ) -> AsyncGenerator[str, None]:
+        async for item in self.placeholder_render(**kwargs):
+            yield item
+            await asyncio.sleep(0.25)
+        async for item in self.partial_render(response_stream, **kwargs):
+            yield item
+            await asyncio.sleep(0.05)
+        async for item in self.complete_render(**kwargs):
+            yield item
+
+
+@dataclass
 class FormComponent(AbstractComponent):
     form: List[Dict[str, str]] = field(default_factory=list)
     output: str = field(default="html")  # either output html or incremental json
@@ -134,7 +214,7 @@ class FormComponent(AbstractComponent):
 
         async for streamed_items in form_items_response:
             items = streamed_items.form_fields
-            streamed_list = [i.model_dump() for i in items]
+            streamed_list = [to_dict(i) for i in items]
             self.form = streamed_list
             patial_template_html = partial_template.render(form=list(streamed_list))
             yield template_wrapper.render(form_content=patial_template_html)
@@ -187,7 +267,7 @@ class TableComponent(AbstractComponent):
         async for streamed_items in table_items_response:
 
             items = streamed_items.table
-            streamed_list = [i.model_dump() for i in items]
+            streamed_list = [to_dict(i) for i in items]
             self.table = streamed_list
             # list can be blank
             if streamed_list == []:
@@ -223,7 +303,7 @@ class RubricComponent(AbstractComponent):
     rubric_keys: list[str] = field(default_factory=list)
     rubric_criteria: list[str] = field(default_factory=list)
     rubric_rows_outlined: list[tuple[str]] = field(default_factory=list)
-    rubric_rows_populated: list[tuple[str]] = field(default_factory=list)
+    rubric_rows_populated: list[tuple[str, ...]] = field(default_factory=list)
     output: str = field(default="html")
 
     async def placeholder_render(self, **kwargs) -> AsyncGenerator[str, None]:
@@ -263,7 +343,8 @@ class RubricComponent(AbstractComponent):
             for crit in criteria:
                 # to create the rows, num keys -1
                 crit.criteria_value
-                rows.append(([crit.criteria_value] + [""] * (num_keys - 1)))
+                populate_rows = [crit.criteria_value] + [""] * (num_keys - 1)
+                rows.append(tuple(populate_rows))
 
             self.rubric_rows_outlined = rows
             self.rubric_keys = keys
@@ -296,7 +377,7 @@ class RubricComponent(AbstractComponent):
                 i: value
                 for i, value in enumerate(self.rubric_rows_outlined[criteria_idx])
             }
-            row = {criteria.criteria_value: row_content_by_idx}
+            row = {criteria.criteria_value: row_content_by_idx}  # type: ignore
             table_content_grid.update(row)
 
         async for rubric in rubric_cell_response:
@@ -308,7 +389,7 @@ class RubricComponent(AbstractComponent):
                 _logger.debug(cell.category, cell.criteria)
                 _logger.debug(f"Keys: {self.rubric_keys}")
 
-                criterias = [item.criteria_value for item in self.rubric_criteria]
+                criterias = [item.criteria_value for item in self.rubric_criteria]  # type: ignore
                 _logger.debug(f"Criterias: {criterias}")
                 if (
                     cell.category not in self.rubric_keys
@@ -319,14 +400,14 @@ class RubricComponent(AbstractComponent):
                 row_key = keys[cell.category]
                 table_content_grid[cell.criteria][row_key] = cell.content
 
-                table_content_grid_rows = []
+                table_content_grid_rows: list = []
                 for row_content in table_content_grid.values():
                     table_content_grid_rows.append(
-                        (value for _, value in row_content.items())
+                        (value for _, value in row_content.items())  # type: ignore
                     )
 
                 self.rubric_rows_populated = [
-                    list(row) for row in table_content_grid_rows
+                    tuple(row) for row in table_content_grid_rows
                 ]
                 _logger.debug(f"Table content grid rows: {self.rubric_rows_populated}")
                 patial_template_html = partial_template.render(
@@ -365,5 +446,58 @@ class RubricComponent(AbstractComponent):
         ):
             yield item
             await asyncio.sleep(0.0001)
+        async for item in self.complete_render(**kwargs):
+            yield item
+
+
+@dataclass
+class SwitchComponent(AbstractComponent):
+    state: str = field(default="off")
+    label: str = field(default="Enable setting")
+    output: str = field(default="html")
+
+    async def placeholder_render(self, **kwargs) -> AsyncGenerator[str, None]:
+        placeholder_template = template("switch/switch_placeholder.html")
+        template_wrapper = template("switch/switch_container.html")
+        component_html = placeholder_template.render()
+        yield template_wrapper.render(switch_content=component_html)
+
+    async def partial_render(
+        self,
+        response_stream: AsyncGenerator[str, None],
+        SwitchType=DefaultSwitchState,
+        **kwargs,
+    ) -> AsyncGenerator[str, None]:
+        partial_template = template("switch/switch_partial.html")
+        template_wrapper = template("switch/switch_container.html")
+
+        switch_state_response: AsyncGenerator = tree_sitter_parse(
+            SwitchType,
+            response_stream,
+        )
+
+        async for streamed_state in switch_state_response:
+            # streamed_state is a DefaultSwitchState
+            if getattr(streamed_state, "state", None):
+                self.state = streamed_state.state
+            if getattr(streamed_state, "label", None):
+                self.label = streamed_state.label
+            partial_html = partial_template.render(state=self.state, label=self.label)
+            yield template_wrapper.render(switch_content=partial_html)
+
+    async def complete_render(self, **kwargs) -> AsyncGenerator[str, None]:
+        complete_template = template("switch/switch_complete.html")
+        template_wrapper = template("switch/switch_container.html")
+        yield template_wrapper.render(switch_content=complete_template.render(state=self.state, label=self.label))
+
+    async def render(
+        self, response_stream: AsyncGenerator[str, None], **kwargs
+    ) -> AsyncGenerator[str, None]:
+        async for item in self.placeholder_render(**kwargs):
+            yield item
+            await asyncio.sleep(0.25)
+        async for item in self.partial_render(response_stream, **kwargs):
+            yield item
+            await asyncio.sleep(0.05)
         async for item in self.complete_render(**kwargs):
             yield item
