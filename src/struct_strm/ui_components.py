@@ -3,6 +3,17 @@ import asyncio
 from dataclasses import dataclass, field
 from typing import Generator, List, AsyncGenerator, Dict, Any
 from types import CoroutineType
+import logging
+
+_logger = logging.getLogger(__name__)
+
+try:
+    from pydantic import BaseModel
+    HAS_PYDANTIC = True
+except Exception as e:
+    _logger.warning(f"Warning: Pydantic Not Installed, some example features may be univailable.")
+    HAS_PYDANTIC = False
+
 from struct_strm.structs.list_structs import (
     DefaultListStruct,
     DefaultListItem,
@@ -18,13 +29,12 @@ from struct_strm.structs.table_structs import (
 from struct_strm.structs.rubric_structs import DefaultOutlineRubric, DefaultRubric
 from struct_strm.structs.switch_structs import DefaultSwitchState
 from struct_strm.structs.dropdown_structs import DefaultDropdown
+
 from struct_strm.template import template
 from struct_strm.partial_parser import (
     tree_sitter_parse,
 )
 from struct_strm.compat import to_dict
-
-
 import logging
 
 _logger = logging.getLogger(__name__)

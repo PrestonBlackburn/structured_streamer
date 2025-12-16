@@ -4,7 +4,6 @@ from dataclasses import is_dataclass, asdict
 
 try:
     from pydantic import BaseModel
-
     HAS_PYDANTIC = True
 except ImportError:
     HAS_PYDANTIC = False
@@ -12,6 +11,9 @@ except ImportError:
 
 
 def is_pydantic_model(PydanticModel: Any) -> bool:
+    if HAS_PYDANTIC == False:
+        return False
+    
     is_pydantic_model = False
     if BaseModel is None:
         return is_pydantic_model
