@@ -1,0 +1,1266 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../parsing_streams/">
+      
+      
+        <link rel="next" href="../benchmarks/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.19">
+    
+    
+      
+        <title>Examples - Structured Streamer</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#streaming-examples" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Structured Streamer" class="md-header__button md-logo" aria-label="Structured Streamer" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Structured Streamer
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Examples
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Structured Streamer" class="md-nav__button md-logo" aria-label="Structured Streamer" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Structured Streamer
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    About
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parsing_streams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Features
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Examples
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Examples
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#openai" class="md-nav__link">
+    <span class="md-ellipsis">
+      OpenAI
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hugging-face" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hugging Face
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ollama-working-example-dataclass" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ollama (Working Example - Dataclass)
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Benchmarks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../limitations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Limitations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#openai" class="md-nav__link">
+    <span class="md-ellipsis">
+      OpenAI
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hugging-face" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hugging Face
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ollama-working-example-dataclass" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ollama (Working Example - Dataclass)
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="streaming-examples">Streaming Examples<a class="headerlink" href="#streaming-examples" title="Permanent link">&para;</a></h1>
+<p>Any library that supports structured streaming outputs should work with the <code>struct-strm</code> library. However, these use cases aren't widely doumented yet, so I'll add examples here for integrations. </p>
+<h2 id="openai">OpenAI<a class="headerlink" href="#openai" title="Permanent link">&para;</a></h2>
+<p>First we can use the async OpenAI client with a structure to create a stream. Examples of creating the async stream with the OpenAI client can also be found in the <a href="https://github.com/openai/openai-python">OpenAI docs</a>.<br />
+<div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncOpenAI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">AsyncOpenAI</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your token here&quot;</span><span class="p">)</span>
+
+<span class="c1"># Setup up all of the required info for the query</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DefaultListItem</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">item</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DefaultListStruct</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="c1"># mostly just for testing</span>
+    <span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DefaultListItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># The few shot example is optional</span>
+<span class="n">few_shot_examples</span> <span class="o">=</span> <span class="n">DefaultListStruct</span><span class="p">(</span>
+    <span class="n">items</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">DefaultListItem</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="s2">&quot;The Hugging Face Transformers library is an open-source Python library that provides access to a vast collection of pre-trained Transformer models for various machine learning tasks. While initially focused on Natural Language Processing (NLP), its capabilities have expanded to include computer vision, audio processing, and multimodal applications.&quot;</span><span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">)</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">()</span>
+<span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;Create list describing 10 open source llm tools&quot;</span>
+<span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;gpt-4.1-mini&quot;</span>
+
+
+<span class="c1"># create the messages - </span>
+<span class="n">messages</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;example response: </span><span class="si">{</span><span class="n">few_shot_examples</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">})</span>
+<span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">})</span>
+
+<span class="n">stream</span> <span class="o">=</span>  <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+    <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+    <span class="n">response_format</span><span class="o">=</span><span class="n">DefaultListStruct</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+<p>Now that we have the OpenAI completion stream we can wrap it using the <code>struct-strm</code> library to return structures instead of strings. 
+<div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">struct_strm</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_openai_stream</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+
+<span class="c1"># you&#39;ll want to use a function to handle the async generator</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">your_streamed_response_function</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">DefaultListStruct</span><span class="p">):</span>
+    <span class="n">structured_response_stream</span> <span class="o">=</span> <span class="n">parse_openai_stream</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">DefaultListStruct</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">structure</span> <span class="ow">in</span> <span class="n">structured_response_stream</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">list_struct</span> <span class="ow">in</span> <span class="n">structure</span><span class="p">:</span>
+            <span class="c1"># do whatever you want with these results</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">list_struct</span><span class="p">)</span>
+
+<span class="c1"># you would probably do something with this function,</span>
+<span class="c1"># but we&#39;ll just run it for example purposes</span>
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">your_streamed_response_function</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">DefaultListStruct</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div></p>
+<p>Fully formed python classes are returned:
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>&gt;&gt;&gt;<span class="w">  </span>DefaultListStruct<span class="o">(</span><span class="nv">items</span><span class="o">=[</span>DefaultListItem<span class="o">(</span><span class="nv">item</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="o">)])</span>
+&gt;&gt;&gt;<span class="w">  </span>DefaultListStruct<span class="o">(</span><span class="nv">items</span><span class="o">=[</span>DefaultListItem<span class="o">(</span><span class="nv">item</span><span class="o">=</span><span class="s2">&quot;Pytorch&quot;</span><span class="o">)])</span>
+&gt;&gt;&gt;<span class="w">  </span>DefaultListStruct<span class="o">(</span><span class="nv">items</span><span class="o">=[</span>DefaultListItem<span class="o">(</span><span class="nv">item</span><span class="o">=</span><span class="s2">&quot;Pytorch is&quot;</span><span class="o">)])</span>
+&gt;&gt;&gt;<span class="w">  </span>etc....
+</code></pre></div></td></tr></table></div></p>
+<h2 id="hugging-face">Hugging Face<a class="headerlink" href="#hugging-face" title="Permanent link">&para;</a></h2>
+<p>For an open source approach, we can use Hugging Face (or other libraries) and XGrammar. XGrammar is an open-source library for efficient, flexible, and portable structured generation. XGrammar is an open-source library for efficient, flexible, and portable structured generation. You can read more about XGrammar <a href="https://xgrammar.mlc.ai/">here</a>, but I'll assume you have already read the docs for this example.   </p>
+<p><br/></p>
+<p>There is a bit of setup we need to do, since we will modify the logits of a foundation model to enable the grammar constrained decoding that matches our provided Pydantic (or json) schema.  </p>
+<p><br/></p>
+<p>First we'll import everything that we'll need and setup the initial model configs.
+<div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">threading</span><span class="w"> </span><span class="kn">import</span> <span class="n">Thread</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">AsyncGenerator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">transformers</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AutoTokenizer</span><span class="p">,</span>
+    <span class="n">AutoConfig</span><span class="p">,</span>
+    <span class="n">AutoModelForCausalLM</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xgrammar</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xgr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">transformers</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncTextIteratorStreamer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">struct_strm.llm_wrappers</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_hf_stream</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">init_model</span><span class="p">():</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="s1">&#39;cpu&#39;</span>
+    <span class="c1"># tokenizer info:</span>
+    <span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;deepseek-ai/deepseek-coder-1.3b-instruct&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">AutoModelForCausalLM</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+            <span class="n">model_name</span><span class="p">,</span> <span class="n">torch_dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">device_map</span><span class="o">=</span><span class="n">device</span>
+    <span class="p">)</span>
+    <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">AutoConfig</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">config</span>
+</code></pre></div></td></tr></table></div></p>
+<p>The bulk of the logic is in this next section. Again, most of this is outlined in the XGrammar docs, but basically we need to: 
+- Create a compiled grammar based on our target structure with our model's tokenizer + XGrammar
+- Create a logits processor based on the grammar to filter the response tokens to our specified grammar
+- Start a new thread to support streaming the hugging face model response</p>
+<div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_async_query</span><span class="p">(</span><span class="n">user_query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Schema</span><span class="p">:</span> <span class="n">BaseModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="n">model</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">init_model</span><span class="p">()</span>
+
+    <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;You are a helpful assistant.&quot;</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">user_query</span><span class="p">}</span>
+    <span class="p">]</span>
+
+    <span class="n">text</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">apply_chat_template</span><span class="p">(</span>
+        <span class="n">messages</span><span class="p">,</span> 
+        <span class="n">tokenize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">add_generation_prompt</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+
+    <span class="n">model_inputs</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span>
+        <span class="n">text</span><span class="p">,</span>
+        <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">,</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="n">full_vocab_size</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">vocab_size</span>
+    <span class="n">tokenizer_info</span> <span class="o">=</span> <span class="n">xgr</span><span class="o">.</span><span class="n">TokenizerInfo</span><span class="o">.</span><span class="n">from_huggingface</span><span class="p">(</span>
+        <span class="n">tokenizer</span><span class="p">,</span>
+        <span class="n">vocab_size</span><span class="o">=</span><span class="n">full_vocab_size</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">compiler</span> <span class="o">=</span> <span class="n">xgr</span><span class="o">.</span><span class="n">GrammarCompiler</span><span class="p">(</span><span class="n">tokenizer_info</span><span class="p">)</span>
+
+    <span class="n">compiled_grammar</span> <span class="o">=</span> <span class="n">compiler</span><span class="o">.</span><span class="n">compile_json_schema</span><span class="p">(</span><span class="n">Schema</span><span class="p">)</span>
+    <span class="n">xgr_logits_processor</span> <span class="o">=</span> <span class="n">xgr</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">LogitsProcessor</span><span class="p">(</span><span class="n">compiled_grammar</span><span class="p">)</span>
+
+    <span class="n">async_streamer</span> <span class="o">=</span> <span class="n">AsyncTextIteratorStreamer</span><span class="p">(</span>
+        <span class="n">tokenizer</span><span class="p">,</span> 
+        <span class="n">timeout</span><span class="o">=</span><span class="mf">60.0</span><span class="p">,</span>
+        <span class="n">skip_prompt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+        <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="n">generation_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="o">**</span><span class="n">model_inputs</span><span class="p">,</span>
+        <span class="n">max_new_tokens</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+        <span class="n">logits_processor</span><span class="o">=</span><span class="p">[</span><span class="n">xgr_logits_processor</span><span class="p">],</span>
+        <span class="n">streamer</span> <span class="o">=</span> <span class="n">async_streamer</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">thread</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">generate</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">generation_kwargs</span><span class="p">)</span>
+    <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">async_streamer</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">token</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span> 
+</code></pre></div></td></tr></table></div>
+<p>Finally we can take the stream generated by the model + xgrammar and pass it to the <code>struct-strm</code> hugging face wrapper.</p>
+<div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_hf_stream</span><span class="p">(</span>
+    <span class="n">user_query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+    <span class="n">Schema</span><span class="p">:</span> <span class="n">BaseModel</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test the Hugging Face stream with a given user query and schema.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">stream</span> <span class="o">=</span> <span class="n">test_async_query</span><span class="p">(</span><span class="n">user_query</span><span class="p">,</span> <span class="n">Schema</span><span class="p">)</span>
+    <span class="n">structured_response_stream</span> <span class="o">=</span> <span class="n">parse_hf_stream</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">Schema</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">structure</span> <span class="ow">in</span> <span class="n">structured_response_stream</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">schema_struct</span> <span class="ow">in</span> <span class="n">structure</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Struct: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">schema_struct</span><span class="p">)</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">schema_struct</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># run the example</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestPerson</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<span class="n">user_query</span> <span class="o">=</span> <span class="s2">&quot;Introduce yourself in JSON with two fields: name and age.&quot;</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">test_hf_stream</span><span class="p">(</span><span class="n">user_query</span><span class="p">,</span> <span class="n">TestPerson</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+<p>Fully formed python classes are returned:
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>&gt;&gt;&gt;<span class="w">  </span>TestPerson<span class="o">(</span><span class="nv">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span>,<span class="w"> </span><span class="nv">age</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="o">)</span>
+&gt;&gt;&gt;<span class="w">  </span>TestPerson<span class="o">(</span><span class="nv">name</span><span class="o">=</span><span class="s2">&quot;bilbo&quot;</span>,<span class="w"> </span><span class="nv">age</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="o">)</span>
+&gt;&gt;&gt;<span class="w">  </span>TestPerson<span class="o">(</span><span class="nv">name</span><span class="o">=</span><span class="s2">&quot;bilbo baggins&quot;</span>,<span class="w"> </span><span class="nv">age</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="o">)</span>
+&gt;&gt;&gt;<span class="w">  </span>TestPerson<span class="o">(</span><span class="nv">name</span><span class="o">=</span><span class="s2">&quot;bilbo baggins&quot;</span>,<span class="w"> </span><span class="nv">age</span><span class="o">=</span><span class="s2">&quot;111&quot;</span><span class="o">)</span>
+</code></pre></div></td></tr></table></div></p>
+<h2 id="ollama-working-example-dataclass">Ollama (Working Example - Dataclass)<a class="headerlink" href="#ollama-working-example-dataclass" title="Permanent link">&para;</a></h2>
+<p>This section provides a robust, working example demonstrating how to use <code>struct-strm</code> with a local Ollama server running its OpenAI-compatible API, using native <strong>Python Dataclasses</strong>. This approach resolves common compatibility issues by manually extracting the raw text tokens from the Ollama stream and using the generic <code>parse_hf_stream</code> wrapper.</p>
+<div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">------------------------------------------------------------</span>
+<span class="sd">Ollama + Llama 3 Setup (Docker)</span>
+<span class="sd">------------------------------------------------------------</span>
+<span class="sd">Run the following commands before starting this script:</span>
+
+<span class="sd">docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama</span>
+<span class="sd">docker exec -it ollama bash</span>
+<span class="sd">ollama pull llama3</span>
+
+<span class="sd">Notes:</span>
+<span class="sd">- Models persist via the &quot;ollama&quot; volume.</span>
+<span class="sd">- Ollama API runs at http://localhost:11434.</span>
+<span class="sd">- Replace &quot;llama3&quot; with another model if needed.</span>
+<span class="sd">------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncOpenAI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">struct_strm</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_hf_stream</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span>
+
+<span class="c1"># --- Configuration &amp; Client Setup ---</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">AsyncOpenAI</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;http://localhost:11434/v1&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;ollama&quot;</span><span class="p">)</span>
+<span class="n">MODEL_NAME</span> <span class="o">=</span> <span class="s2">&quot;llama3&quot;</span>
+<span class="n">QUERY</span> <span class="o">=</span> <span class="s2">&quot;Create a list describing 5 open source LLM tools&quot;</span>
+
+<span class="c1"># --- Dataclass Schema ---</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ToolItem</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ToolList</span><span class="p">:</span>
+    <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ToolItem</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+
+<span class="c1"># --- Schema &amp; Example Setup ---</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">create_few_shot_json</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">example_instance</span> <span class="o">=</span> <span class="n">ToolList</span><span class="p">(</span>
+        <span class="n">tools</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">ToolItem</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Hugging Face Transformers&quot;</span><span class="p">,</span> 
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The industry-standard Python library providing thousands of pre-trained models for NLP, Vision, and Audio tasks, along with simple APIs for loading and using them.&quot;</span>
+            <span class="p">),</span>
+            <span class="n">ToolItem</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;llama.cpp&quot;</span><span class="p">,</span> 
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;A high-performance C/C++ inference engine for Llama and other models, optimized for local CPU and efficient GPU execution, often used for running models on consumer hardware.&quot;</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">example_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;tools&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">description</span><span class="p">}</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">example_instance</span><span class="o">.</span><span class="n">tools</span><span class="p">]}</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">example_dict</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">create_json_schema_prompt</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;tools&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;The name of the open source tool.&quot;</span><span class="p">},</span>
+                        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;A brief description of the tool.&quot;</span><span class="p">},</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># --- Stream Processing ---</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">extract_text_from_openai_stream</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">stream</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">chunk</span><span class="o">.</span><span class="n">choices</span> <span class="ow">and</span> <span class="n">chunk</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">delta</span> <span class="ow">and</span> <span class="n">chunk</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">delta</span><span class="o">.</span><span class="n">content</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">chunk</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">delta</span><span class="o">.</span><span class="n">content</span>
+
+<span class="c1"># --- Main Execution ---</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">few_shot_example_json</span> <span class="o">=</span> <span class="n">create_few_shot_json</span><span class="p">()</span>
+    <span class="n">json_schema_prompt</span> <span class="o">=</span> <span class="n">create_json_schema_prompt</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connecting to Ollama using model: </span><span class="si">{</span><span class="n">MODEL_NAME</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Query: </span><span class="si">{</span><span class="n">QUERY</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;You are a helpful assistant that returns ONLY a JSON object based on the following schema instruction and example. SCHEMA: </span><span class="si">{</span><span class="n">json_schema_prompt</span><span class="si">}</span><span class="s2"> EXAMPLE: </span><span class="si">{</span><span class="n">few_shot_example_json</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">QUERY</span><span class="p">},</span>
+    <span class="p">]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">openai_chunk_stream</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">MODEL_NAME</span><span class="p">,</span>
+            <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+            <span class="n">response_format</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;json_object&quot;</span><span class="p">},</span> 
+            <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Connection Error (during stream initiation) ---&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to create stream: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Please ensure Ollama is running and model &#39;</span><span class="si">{</span><span class="n">MODEL_NAME</span><span class="si">}</span><span class="s2">&#39; is available.&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">raw_text_stream</span> <span class="o">=</span> <span class="n">extract_text_from_openai_stream</span><span class="p">(</span><span class="n">openai_chunk_stream</span><span class="p">)</span>
+    <span class="n">structured_updates_source</span> <span class="o">=</span> <span class="n">parse_hf_stream</span><span class="p">(</span><span class="n">raw_text_stream</span><span class="p">,</span> <span class="n">ToolList</span><span class="p">)</span> 
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Streaming Structured Output ---&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">for</span> <span class="n">generator_wrapper</span> <span class="ow">in</span> <span class="n">structured_updates_source</span><span class="p">:</span> 
+        <span class="k">async</span> <span class="k">for</span> <span class="n">update</span> <span class="ow">in</span> <span class="n">generator_wrapper</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;| Update: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">update</span><span class="o">.</span><span class="n">tools</span><span class="p">)</span><span class="si">}</span><span class="s2"> Tool(s) Parsed So Far&quot;</span><span class="p">)</span> 
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">raw_data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">update</span><span class="o">.</span><span class="n">tools</span><span class="p">):</span>
+
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                        <span class="n">tool</span> <span class="o">=</span> <span class="n">ToolItem</span><span class="p">(</span><span class="o">**</span><span class="nb">dict</span><span class="p">(</span><span class="n">raw_data</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">tool</span> <span class="o">=</span> <span class="n">raw_data</span>
+
+                    <span class="n">name_status</span> <span class="o">=</span> <span class="n">tool</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">tool</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="s2">&quot;(parsing name...)&quot;</span>
+                    <span class="n">desc_status</span> <span class="o">=</span> <span class="n">tool</span><span class="o">.</span><span class="n">description</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">tool</span><span class="o">.</span><span class="n">description</span> <span class="k">else</span> <span class="s2">&quot;(parsing description...)&quot;</span>
+
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;| Tool </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> Name: </span><span class="si">{</span><span class="n">name_status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;| Tool </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> Desc: </span><span class="si">{</span><span class="n">desc_status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- CRITICAL DIAGNOSTIC ERROR (Final Check) ---&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error occurred while processing item </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Type of object that failed: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">raw_data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The parent object was: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">update</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> 
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Stream Complete ---&quot;</span><span class="p">)</span>
+
+<span class="c1"># --- Application Entrypoint ---</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s1">&#39;struct_strm&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error: The &#39;struct_strm&#39; library is required. Please install it with &#39;pip install struct-strm&#39;&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- An unexpected system error occurred ---&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p>When the script runs, the ToolList dataclass is updated incrementally, demonstrating real-time structured parsing.
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code>Connecting<span class="w"> </span>to<span class="w"> </span>Ollama<span class="w"> </span>using<span class="w"> </span>model:<span class="w"> </span>llama3
+Query:<span class="w"> </span>Create<span class="w"> </span>a<span class="w"> </span>list<span class="w"> </span>describing<span class="w"> </span><span class="m">5</span><span class="w"> </span>open<span class="w"> </span><span class="nb">source</span><span class="w"> </span>LLM<span class="w"> </span>tools
+
+---<span class="w"> </span>Streaming<span class="w"> </span>Structured<span class="w"> </span>Output<span class="w"> </span>---
+
+<span class="o">==================================================</span>
+<span class="p">|</span><span class="w"> </span>Update:<span class="w"> </span><span class="m">0</span><span class="w"> </span>Tool<span class="o">(</span>s<span class="o">)</span><span class="w"> </span>Parsed<span class="w"> </span>So<span class="w"> </span><span class="nv">Far</span>
+<span class="o">==================================================</span>
+.
+.
+<span class="o">==================================================</span>
+<span class="p">|</span><span class="w"> </span>Update:<span class="w"> </span><span class="m">1</span><span class="w"> </span>Tool<span class="o">(</span>s<span class="o">)</span><span class="w"> </span>Parsed<span class="w"> </span>So<span class="w"> </span><span class="nv">Far</span>
+<span class="o">==================================================</span>
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">1</span><span class="w"> </span>Name:<span class="w"> </span><span class="o">(</span>parsing<span class="w"> </span>name...<span class="o">)</span>
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">1</span><span class="w"> </span>Desc:<span class="w"> </span><span class="o">(</span>parsing<span class="w"> </span>description...<span class="o">)</span>
+
+<span class="o">==================================================</span>
+<span class="p">|</span><span class="w"> </span>Update:<span class="w"> </span><span class="m">1</span><span class="w"> </span>Tool<span class="o">(</span>s<span class="o">)</span><span class="w"> </span>Parsed<span class="w"> </span>So<span class="w"> </span><span class="nv">Far</span>
+<span class="o">==================================================</span>
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">1</span><span class="w"> </span>Name:<span class="w"> </span>H
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">1</span><span class="w"> </span>Desc:<span class="w"> </span><span class="o">(</span>parsing<span class="w"> </span>description...<span class="o">)</span>
+
+<span class="o">==================================================</span>
+<span class="p">|</span><span class="w"> </span>Update:<span class="w"> </span><span class="m">1</span><span class="w"> </span>Tool<span class="o">(</span>s<span class="o">)</span><span class="w"> </span>Parsed<span class="w"> </span>So<span class="w"> </span><span class="nv">Far</span>
+<span class="o">==================================================</span>
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">1</span><span class="w"> </span>Name:<span class="w"> </span>Hugging
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">1</span><span class="w"> </span>Desc:<span class="w"> </span><span class="o">(</span>parsing<span class="w"> </span>description...<span class="o">)</span>
+
+<span class="o">==================================================</span>
+<span class="p">|</span><span class="w"> </span>Update:<span class="w"> </span><span class="m">1</span><span class="w"> </span>Tool<span class="o">(</span>s<span class="o">)</span><span class="w"> </span>Parsed<span class="w"> </span>So<span class="w"> </span><span class="nv">Far</span>
+<span class="o">==================================================</span>
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">1</span><span class="w"> </span>Name:<span class="w"> </span>Hugging<span class="w"> </span>Face
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">1</span><span class="w"> </span>Desc:<span class="w"> </span><span class="o">(</span>parsing<span class="w"> </span>description...<span class="o">)</span>
+
+<span class="o">==================================================</span>
+<span class="p">|</span><span class="w"> </span>Update:<span class="w"> </span><span class="m">1</span><span class="w"> </span>Tool<span class="o">(</span>s<span class="o">)</span><span class="w"> </span>Parsed<span class="w"> </span>So<span class="w"> </span><span class="nv">Far</span>
+<span class="o">==================================================</span>
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">1</span><span class="w"> </span>Name:<span class="w"> </span>Hugging<span class="w"> </span>Face<span class="w"> </span>Transformers
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">1</span><span class="w"> </span>Desc:<span class="w"> </span><span class="o">(</span>parsing<span class="w"> </span>description...<span class="o">)</span>
+.
+.
+<span class="o">==================================================</span>
+<span class="p">|</span><span class="w"> </span>Update:<span class="w"> </span><span class="m">5</span><span class="w"> </span>Tool<span class="o">(</span>s<span class="o">)</span><span class="w"> </span>Parsed<span class="w"> </span>So<span class="w"> </span><span class="nv">Far</span>
+<span class="o">==================================================</span>
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">1</span><span class="w"> </span>Name:<span class="w"> </span>Hugging<span class="w"> </span>Face<span class="w"> </span>Transformers
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">1</span><span class="w"> </span>Desc:<span class="w"> </span>The<span class="w"> </span>industry-standard<span class="w"> </span>Python<span class="w"> </span>library<span class="w"> </span>providing<span class="w"> </span>thousands<span class="w"> </span>of<span class="w"> </span>pre-trained<span class="w"> </span>models<span class="w"> </span><span class="k">for</span><span class="w"> </span>NLP,<span class="w"> </span>Vision,<span class="w"> </span>and<span class="w"> </span>Audio<span class="w"> </span>tasks,<span class="w"> </span>along<span class="w"> </span>with<span class="w"> </span>simple<span class="w"> </span>APIs<span class="w"> </span><span class="k">for</span><span class="w"> </span>loading<span class="w"> </span>and<span class="w"> </span>using<span class="w"> </span>them.
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">2</span><span class="w"> </span>Name:<span class="w"> </span>llama.cpp
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">2</span><span class="w"> </span>Desc:<span class="w"> </span>A<span class="w"> </span>high-performance<span class="w"> </span>C/C++<span class="w"> </span>inference<span class="w"> </span>engine<span class="w"> </span><span class="k">for</span><span class="w"> </span>Llama<span class="w"> </span>and<span class="w"> </span>other<span class="w"> </span>models,<span class="w"> </span>optimized<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nb">local</span><span class="w"> </span>CPU<span class="w"> </span>and<span class="w"> </span>efficient<span class="w"> </span>GPU<span class="w"> </span>execution,<span class="w"> </span>often<span class="w"> </span>used<span class="w"> </span><span class="k">for</span><span class="w"> </span>running<span class="w"> </span>models<span class="w"> </span>on<span class="w"> </span>consumer<span class="w"> </span>hardware.
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">3</span><span class="w"> </span>Name:<span class="w"> </span>Optimus
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">3</span><span class="w"> </span>Desc:<span class="w"> </span>An<span class="w"> </span>open-source<span class="w"> </span>Python<span class="w"> </span>library<span class="w"> </span>that<span class="w"> </span>generates<span class="w"> </span>natural<span class="w"> </span>language<span class="w"> </span>text<span class="w"> </span>based<span class="w"> </span>on<span class="w"> </span>a<span class="w"> </span>prompt<span class="w"> </span>using<span class="w"> </span>various<span class="w"> </span>AI<span class="w"> </span>algorithms,<span class="w"> </span>allowing<span class="w"> </span>developers<span class="w"> </span>to<span class="w"> </span>build<span class="w"> </span>robust<span class="w"> </span>language<span class="w"> </span>models<span class="w"> </span>and<span class="w"> </span>conversational<span class="w"> </span>interfaces.
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">4</span><span class="w"> </span>Name:<span class="w"> </span>Rasa
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">4</span><span class="w"> </span>Desc:<span class="w"> </span>A<span class="w"> </span>popular<span class="w"> </span>open-source<span class="w"> </span>natural<span class="w"> </span>language<span class="w"> </span>processing<span class="w"> </span>framework<span class="w"> </span><span class="k">for</span><span class="w"> </span>building<span class="w"> </span>contextual<span class="w"> </span>chatbots<span class="w"> </span>and<span class="w"> </span>conversational<span class="w"> </span>interfaces,<span class="w"> </span>focused<span class="w"> </span>on<span class="w"> </span>integrating<span class="w"> </span>NLP<span class="w"> </span>with<span class="w"> </span>machine<span class="w"> </span>learning<span class="w"> </span>and<span class="w"> </span>business<span class="w"> </span>logic.
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">5</span><span class="w"> </span>Name:<span class="w"> </span>Stanford<span class="w"> </span>CoreNLP
+<span class="p">|</span><span class="w"> </span>Tool<span class="w"> </span><span class="m">5</span><span class="w"> </span>Desc:<span class="w"> </span>A<span class="w"> </span>robust<span class="w"> </span>Java<span class="w"> </span>library<span class="w"> </span>that<span class="w"> </span>leverages<span class="w"> </span>the<span class="w"> </span>power<span class="w"> </span>of<span class="w"> </span>machine<span class="w"> </span>learning<span class="w"> </span>models<span class="w"> </span>to<span class="w"> </span>perform<span class="w"> </span>various<span class="w"> </span>NLP<span class="w"> </span>tasks,<span class="w"> </span>such<span class="w"> </span>as<span class="w"> </span>tokenization,<span class="w"> </span>part-of-speech<span class="w"> </span>tagging,<span class="w"> </span>named<span class="w"> </span>entity<span class="w"> </span>recognition,<span class="w"> </span>and<span class="w"> </span>sentiment<span class="w"> </span>analysis.
+---<span class="w"> </span>Stream<span class="w"> </span>Complete<span class="w"> </span>---
+</code></pre></div></td></tr></table></div></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../parsing_streams/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Features">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Features
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../benchmarks/" class="md-footer__link md-footer__link--next" aria-label="Next: Benchmarks">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Benchmarks
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.footer", "content.action.edit"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+        <script src="../search/main.js"></script>
+      
+    
+  </body>
+</html>
