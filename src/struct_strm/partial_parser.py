@@ -176,7 +176,15 @@ async def tree_sitter_parse(
     source: Union[str, None] = None,
 ) -> AsyncGenerator[Union[type[Any], dict], None]:
     # return an instance of the struct for every response
-    response = struct()
+    try:
+        response = struct()
+    except TypeError as e:
+        raise TypeError(
+            f"Could not instantiate {struct.__name__} with no arguments: {e}. "
+            "All fields on the provided struct must have default values "
+            "(e.g. `field_name: str = \"\"` or `field_name: list = field(default_factory=list)`) "
+            "so that partial results can be constructed as the stream is parsed."
+        ) from e
     buffer = ""
     JSON_LANG = Language(ts_json.language())
     parser = Parser(JSON_LANG)
